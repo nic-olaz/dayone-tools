@@ -1,9 +1,11 @@
 import { useEffect, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, ExternalLink, MessageSquare, Send } from 'lucide-react'
+import { ArrowLeft, ExternalLink, LogOut, MessageSquare, Send } from 'lucide-react'
+import type { User } from '@supabase/supabase-js'
 import { supabase, trackClick, type Tool, type Category } from '@/lib/supabase'
 import { BrandLogo } from '@/components/BrandLogo'
 import { SEO } from '@/components/SEO'
+import { AuthPanel } from '@/components/AuthPanel'
 
 type ToolWithCategory = Tool & { categories: Category }
 
@@ -16,14 +18,28 @@ interface Comment {
 
 function CommentsSection({ toolId }: { toolId: string }) {
   const [comments, setComments] = useState<Comment[]>([])
-  const [loading, setLoading] = useState(true)
-  const [name, setName] = useState('')
+  const [loadingComments, setLoadingComments] = useState(true)
+  const [user, setUser] = useState<User | null>(null)
+  const [loadingAuth, setLoadingAuth] = useState(true)
   const [text, setText] = useState('')
   const [submitting, setSubmitting] = useState(false)
   const [submitted, setSubmitted] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const formRef = useRef<HTMLFormElement>(null)
 
+  // Auth state
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+      setLoadingAuth(false)
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  // Comments
   useEffect(() => {
     supabase
       .from('comments')
@@ -33,28 +49,40 @@ function CommentsSection({ toolId }: { toolId: string }) {
       .order('created_at', { ascending: false })
       .then(({ data }) => {
         setComments((data as Comment[]) ?? [])
-        setLoading(false)
+        setLoadingComments(false)
       })
   }, [toolId])
 
+  function displayName(u: User): string {
+    return (
+      u.user_metadata?.full_name ||
+      u.user_metadata?.name ||
+      u.email?.split('@')[0] ||
+      'Anonymous'
+    )
+  }
+
+  async function handleSignOut() {
+    await supabase.auth.signOut()
+  }
+
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
+    if (!user) return
     setError(null)
-    if (name.trim().length < 2) { setError('Please enter your name (at least 2 characters).'); return }
     if (text.trim().length < 5) { setError('Comment is too short (at least 5 characters).'); return }
     setSubmitting(true)
+    const authorName = displayName(user)
     const { error: err } = await supabase
       .from('comments')
-      .insert({ tool_id: toolId, author_name: name.trim(), content: text.trim() })
+      .insert({ tool_id: toolId, author_name: authorName, content: text.trim(), user_id: user.id })
     setSubmitting(false)
     if (err) { setError('Could not post comment. Please try again.'); return }
     setSubmitted(true)
-    setName('')
     setText('')
-    // Optimistically add to list
     setComments(prev => [{
       id: crypto.randomUUID(),
-      author_name: name.trim(),
+      author_name: authorName,
       content: text.trim(),
       created_at: new Date().toISOString(),
     }, ...prev])
@@ -69,48 +97,57 @@ function CommentsSection({ toolId }: { toolId: string }) {
         </h2>
       </div>
 
-      {/* Comment form */}
-      {submitted ? (
-        <div className="mb-8 rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-sm text-green-700">
-          Thanks for sharing your experience! Your comment is now visible.
-        </div>
-      ) : (
-        <form ref={formRef} onSubmit={handleSubmit} className="mb-10 rounded-2xl border border-gray-200 bg-gray-50 p-6">
-          <p className="mb-4 text-sm font-medium text-gray-700">Using this tool? Share your experience.</p>
-          <div className="mb-3">
-            <input
-              type="text"
-              placeholder="Your name"
-              value={name}
-              onChange={e => setName(e.target.value)}
-              maxLength={60}
-              className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:outline-none"
-            />
+      {/* Auth / Comment form */}
+      {!loadingAuth && (
+        user ? (
+          submitted ? (
+            <div className="mb-8 rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-sm text-green-700">
+              Thanks for sharing your experience!
+            </div>
+          ) : (
+            <form ref={formRef} onSubmit={handleSubmit} className="mb-10 rounded-2xl border border-gray-200 bg-gray-50 p-6">
+              <div className="mb-4 flex items-center justify-between">
+                <span className="text-sm text-gray-600">
+                  Commenting as <span className="font-semibold text-gray-900">{displayName(user)}</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <LogOut size={12} /> Sign out
+                </button>
+              </div>
+              <div className="mb-3">
+                <textarea
+                  placeholder="What's your experience with this tool? Tips, gotchas, alternatives you tried..."
+                  value={text}
+                  onChange={e => setText(e.target.value)}
+                  maxLength={1000}
+                  rows={4}
+                  className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:outline-none resize-none"
+                />
+              </div>
+              {error && <p className="mb-3 text-xs text-red-500">{error}</p>}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700 disabled:opacity-50"
+              >
+                <Send size={13} />
+                {submitting ? 'Posting…' : 'Post comment'}
+              </button>
+            </form>
+          )
+        ) : (
+          <div className="mb-10">
+            <AuthPanel />
           </div>
-          <div className="mb-3">
-            <textarea
-              placeholder="What's your experience with this tool? Tips, gotchas, alternatives you tried..."
-              value={text}
-              onChange={e => setText(e.target.value)}
-              maxLength={1000}
-              rows={4}
-              className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:outline-none resize-none"
-            />
-          </div>
-          {error && <p className="mb-3 text-xs text-red-500">{error}</p>}
-          <button
-            type="submit"
-            disabled={submitting}
-            className="flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700 disabled:opacity-50"
-          >
-            <Send size={13} />
-            {submitting ? 'Posting…' : 'Post comment'}
-          </button>
-        </form>
+        )
       )}
 
       {/* Comments list */}
-      {loading ? (
+      {loadingComments ? (
         <div className="space-y-4">
           {[1,2].map(i => <div key={i} className="h-20 animate-pulse rounded-xl bg-gray-100" />)}
         </div>
@@ -220,7 +257,7 @@ export function ToolDetail() {
     review: {
       '@type': 'Review',
       reviewBody: whyText,
-      author: { '@type': 'Person', name: 'Nico Meibohm', url: 'https://lmno.de' },
+      author: { '@type': 'Person', name: 'Nicolas Meibohm', url: 'https://lmno.de' },
       reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
       publisher: { '@type': 'Organization', name: 'Day One', url: 'https://dayone.tools' },
     },
