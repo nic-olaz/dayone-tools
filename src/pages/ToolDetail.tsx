@@ -1,10 +1,138 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
+import { ArrowLeft, ExternalLink, MessageSquare, Send } from 'lucide-react'
 import { supabase, trackClick, type Tool, type Category } from '@/lib/supabase'
 import { BrandLogo } from '@/components/BrandLogo'
 
 type ToolWithCategory = Tool & { categories: Category }
+
+interface Comment {
+  id: string
+  author_name: string
+  content: string
+  created_at: string
+}
+
+function CommentsSection({ toolId }: { toolId: string }) {
+  const [comments, setComments] = useState<Comment[]>([])
+  const [loading, setLoading] = useState(true)
+  const [name, setName] = useState('')
+  const [text, setText] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const formRef = useRef<HTMLFormElement>(null)
+
+  useEffect(() => {
+    supabase
+      .from('comments')
+      .select('id, author_name, content, created_at')
+      .eq('tool_id', toolId)
+      .eq('is_approved', true)
+      .order('created_at', { ascending: false })
+      .then(({ data }) => {
+        setComments((data as Comment[]) ?? [])
+        setLoading(false)
+      })
+  }, [toolId])
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    setError(null)
+    if (name.trim().length < 2) { setError('Please enter your name (at least 2 characters).'); return }
+    if (text.trim().length < 5) { setError('Comment is too short (at least 5 characters).'); return }
+    setSubmitting(true)
+    const { error: err } = await supabase
+      .from('comments')
+      .insert({ tool_id: toolId, author_name: name.trim(), content: text.trim() })
+    setSubmitting(false)
+    if (err) { setError('Could not post comment. Please try again.'); return }
+    setSubmitted(true)
+    setName('')
+    setText('')
+    // Optimistically add to list
+    setComments(prev => [{
+      id: crypto.randomUUID(),
+      author_name: name.trim(),
+      content: text.trim(),
+      created_at: new Date().toISOString(),
+    }, ...prev])
+  }
+
+  return (
+    <div className="mt-12 border-t border-gray-100 pt-10">
+      <div className="mb-6 flex items-center gap-2">
+        <MessageSquare size={18} className="text-gray-400" />
+        <h2 className="text-lg font-semibold text-gray-900">
+          {comments.length > 0 ? `${comments.length} comment${comments.length === 1 ? '' : 's'}` : 'Comments'}
+        </h2>
+      </div>
+
+      {/* Comment form */}
+      {submitted ? (
+        <div className="mb-8 rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-sm text-green-700">
+          Thanks for sharing your experience! Your comment is now visible.
+        </div>
+      ) : (
+        <form ref={formRef} onSubmit={handleSubmit} className="mb-10 rounded-2xl border border-gray-200 bg-gray-50 p-6">
+          <p className="mb-4 text-sm font-medium text-gray-700">Using this tool? Share your experience.</p>
+          <div className="mb-3">
+            <input
+              type="text"
+              placeholder="Your name"
+              value={name}
+              onChange={e => setName(e.target.value)}
+              maxLength={60}
+              className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:outline-none"
+            />
+          </div>
+          <div className="mb-3">
+            <textarea
+              placeholder="What's your experience with this tool? Tips, gotchas, alternatives you tried..."
+              value={text}
+              onChange={e => setText(e.target.value)}
+              maxLength={1000}
+              rows={4}
+              className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:outline-none resize-none"
+            />
+          </div>
+          {error && <p className="mb-3 text-xs text-red-500">{error}</p>}
+          <button
+            type="submit"
+            disabled={submitting}
+            className="flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700 disabled:opacity-50"
+          >
+            <Send size={13} />
+            {submitting ? 'Posting…' : 'Post comment'}
+          </button>
+        </form>
+      )}
+
+      {/* Comments list */}
+      {loading ? (
+        <div className="space-y-4">
+          {[1,2].map(i => <div key={i} className="h-20 animate-pulse rounded-xl bg-gray-100" />)}
+        </div>
+      ) : comments.length === 0 ? (
+        <p className="text-sm text-gray-400">No comments yet. Be the first to share your experience.</p>
+      ) : (
+        <div className="space-y-4">
+          {comments.map(c => (
+            <div key={c.id} className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-sm font-semibold text-gray-900">{c.author_name}</span>
+                <span className="text-xs text-gray-400">
+                  {new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </span>
+              </div>
+              <p className="text-sm leading-relaxed text-gray-600">{c.content}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
 
 // Fallback why-texts per tool name (used when tool.why is null in DB)
 const WHY_TEXTS: Record<string, string> = {
@@ -138,6 +266,8 @@ export function ToolDetail() {
         <p className="mt-3 text-center text-xs text-gray-400">
           * This may be an affiliate link. We only recommend tools we'd actually use.
         </p>
+
+        <CommentsSection toolId={tool.id} />
       </div>
     </main>
   )

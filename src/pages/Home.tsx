@@ -106,6 +106,41 @@ export function Home() {
           </p>
         )}
       </section>
+
+      {/* About section */}
+      <section className="border-t border-gray-100 bg-gray-50">
+        <div className="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:px-8">
+          <div className="flex flex-col items-center gap-10 sm:flex-row sm:items-start">
+            <img
+              src="/nico.jpg"
+              alt="Nico Meibohm"
+              className="h-28 w-28 flex-shrink-0 rounded-2xl object-cover shadow-sm"
+            />
+            <div>
+              <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-gray-400">
+                Built by
+              </p>
+              <h2 className="mb-3 text-2xl font-bold text-gray-900">Nico Meibohm</h2>
+              <p className="leading-relaxed text-gray-600">
+                I'm a startup coach and founder advisor. Over the years I've helped dozens of
+                early-stage teams get off the ground — from their first pitch to their first
+                funding round. Every time someone asked "what tools should I use?", I gave them
+                the same list. So I turned it into a website.
+              </p>
+              <p className="mt-3 leading-relaxed text-gray-600">
+                No sponsors drive these picks. No rankings were paid for.
+                These are the tools I actually open in my browser.
+              </p>
+              <a
+                href="/why"
+                className="mt-4 inline-flex items-center text-sm font-medium text-gray-900 underline underline-offset-4 hover:text-gray-600 transition-colors"
+              >
+                Why opinionated recommendations? →
+              </a>
+            </div>
+          </div>
+        </div>
+      </section>
     </main>
   )
 }
