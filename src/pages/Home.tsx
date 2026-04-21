@@ -154,7 +154,7 @@ export function Home() {
         <div className="mx-auto max-w-4xl px-4 py-20 sm:px-6 lg:px-8">
           <div className="flex flex-col items-center gap-10 sm:flex-row sm:items-start">
             <img
-              src="/nico.jpg"
+              src="/nico.png"
               alt="Nicolas Meibohm"
               className="h-28 w-28 flex-shrink-0 rounded-2xl object-cover shadow-sm"
             />
