@@ -32,11 +32,11 @@ const ICONS: Record<string, { path: string; hex: string; title: string }> = {
   vercel:             siVercel,
 }
 
-// Emoji fallbacks for tools without a simple-icons entry
-const EMOJI_FALLBACKS: Record<string, string> = {
-  qonto:    '🏦',
-  slack:    '💬',
-  lexoffice:'🧾',
+// Brand colors for tools not in simple-icons
+const BRAND_AVATARS: Record<string, { bg: string; color: string; letter: string }> = {
+  qonto:     { bg: '#FF4500', color: '#ffffff', letter: 'Q' },
+  slack:     { bg: '#4A154B', color: '#ffffff', letter: 'S' },
+  lexoffice: { bg: '#0087FF', color: '#ffffff', letter: 'L' },
 }
 
 interface BrandLogoProps {
@@ -79,14 +79,30 @@ export function BrandLogo({ toolName, categoryIcon, size = 40, className = '' }:
     )
   }
 
-  // Emoji / category fallback
-  const emoji = EMOJI_FALLBACKS[slug] ?? categoryIcon ?? '🔧'
-  const emojiSize = Math.round(dim * 0.5)
+  const avatar = BRAND_AVATARS[slug]
+  if (avatar) {
+    return (
+      <div
+        className={`flex items-center justify-center rounded-xl font-bold ${className}`}
+        style={{
+          width: dim,
+          height: dim,
+          backgroundColor: avatar.bg,
+          color: avatar.color,
+          fontSize: Math.round(dim * 0.42),
+        }}
+      >
+        {avatar.letter}
+      </div>
+    )
+  }
 
+  // Generic emoji fallback
+  const emoji = categoryIcon ?? '🔧'
   return (
     <div
       className={`flex items-center justify-center rounded-xl border border-gray-100 bg-gray-50 ${className}`}
-      style={{ width: dim, height: dim, fontSize: emojiSize }}
+      style={{ width: dim, height: dim, fontSize: Math.round(dim * 0.5) }}
     >
       {emoji}
     </div>

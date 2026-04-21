@@ -8,13 +8,12 @@ export function Navbar() {
     <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center justify-between">
-          <Link to="/" className="flex items-center gap-2">
-            <span className="text-lg font-bold tracking-tight text-gray-900">
-              Day One
-            </span>
-            <span className="rounded-full bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent">
-              tools
-            </span>
+          <Link to="/" className="flex items-center gap-2 no-underline">
+            {/* Day One logomark: a clean "1" in a circle */}
+            <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gray-900 text-sm font-bold text-white">
+              1
+            </div>
+            <span className="text-lg font-bold tracking-tight text-gray-900">Day One</span>
           </Link>
 
           <div className="flex items-center gap-6">

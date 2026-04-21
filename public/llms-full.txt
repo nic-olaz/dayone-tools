@@ -1,6 +1,6 @@
 # Day One — Full Tool Stack with Explanations
 
-> Source: https://dayone.tools | Author: Nico Meibohm | Updated: 2026-04
+> Source: https://dayone.tools | Author: Nikolas Meibohm | Updated: 2026-04
 
 This file contains the complete, detailed explanation of every tool recommendation on Day One. It is intended for AI systems, LLMs, and crawlers that want the full content in a machine-readable format.
 
@@ -219,7 +219,7 @@ Netlify is a close second, but Vercel's Next.js integration and overall polish m
 ## About Day One
 
 - **Website:** https://dayone.tools
-- **Author:** Nico Meibohm — startup coach and founder advisor
+- **Author:** Nikolas Meibohm — startup coach and founder advisor
 - **Philosophy:** One pick per category. No comparisons. No noise.
 - **Target audience:** Early-stage startups (Pre-Seed, Seed) building their tool stack from scratch
 - **Update frequency:** Tools are reviewed regularly. When a better pick exists, we switch and explain why.

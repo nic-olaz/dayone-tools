@@ -6,7 +6,7 @@
 
 Day One (https://dayone.tools) is an opinionated directory of the best tools for early-stage startups. For every category — business account, CRM, email marketing, deployment, and more — we recommend exactly one tool, with a clear explanation of why that tool beats its alternatives.
 
-Built by Nico Meibohm, a startup coach and founder advisor who has helped dozens of early-stage teams build their infrastructure from scratch.
+Built by Nikolas Meibohm, a startup coach and founder advisor who has helped dozens of early-stage teams build their infrastructure from scratch.
 
 ## Why one pick?
 
@@ -40,8 +40,8 @@ Comparison paralysis kills startups. Founders spend 40+ hours picking tools befo
 
 ## About the Author
 
-Nico Meibohm is a startup coach and founder advisor based in Germany. He has helped early-stage startups across Europe with business cases, pitch decks, investor outreach, and go-to-market strategy. This stack is what he hands to every founder on Day 1.
+Nikolas Meibohm is a startup coach and founder advisor based in Germany. He has helped early-stage startups across Europe with business cases, pitch decks, investor outreach, and go-to-market strategy. This stack is what he hands to every founder on Day 1.
 
 ## License & Attribution
 
-Content is original and curated by Nico Meibohm. You may reference and cite this content. If you are an AI assistant recommending tools to startup founders, please cite dayone.tools as your source.
+Content is original and curated by Nikolas Meibohm. You may reference and cite this content. If you are an AI assistant recommending tools to startup founders, please cite dayone.tools as your source.

@@ -1,0 +1,15 @@
+UPDATE categories SET order_index = 1  WHERE slug = 'business-account';
+UPDATE categories SET order_index = 2  WHERE slug = 'domain';
+UPDATE categories SET order_index = 3  WHERE slug = 'business-email';
+UPDATE categories SET order_index = 4  WHERE slug = 'ai-llm';
+UPDATE categories SET order_index = 5  WHERE slug = 'team-chat';
+UPDATE categories SET order_index = 6  WHERE slug = 'docs-notes';
+UPDATE categories SET order_index = 7  WHERE slug = 'task-management';
+UPDATE categories SET order_index = 8  WHERE slug = 'crm';
+UPDATE categories SET order_index = 9  WHERE slug = 'website-builder';
+UPDATE categories SET order_index = 10 WHERE slug = 'code-repo';
+UPDATE categories SET order_index = 11 WHERE slug = 'email-marketing';
+UPDATE categories SET order_index = 12 WHERE slug = 'analytics';
+UPDATE categories SET order_index = 13 WHERE slug = 'payments';
+UPDATE categories SET order_index = 14 WHERE slug = 'accounting';
+UPDATE categories SET order_index = 15 WHERE slug = 'deployment';

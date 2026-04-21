@@ -15,7 +15,7 @@ const homeJsonLd = [
     description: 'The opinionated startup tool directory. One pick per category. No comparisons. No noise.',
     author: {
       '@type': 'Person',
-      name: 'Nico Meibohm',
+      name: 'Nikolas Meibohm',
       url: 'https://lmno.de',
       jobTitle: 'Startup Coach & Founder Advisor',
     },
@@ -113,12 +113,31 @@ export function Home() {
 
       {/* Tool Grid */}
       <section ref={gridRef} className="mx-auto max-w-6xl px-4 pb-24 sm:px-6 lg:px-8">
-        <div className="mb-12 text-center">
-          <h2 className="text-3xl font-bold text-gray-900">The Stack</h2>
-          <p className="mt-2 text-gray-500">
-            The exact tools we hand to every founder on Day 1.
+        <div className="mb-16 text-center">
+          <span className="mb-3 inline-block rounded-full bg-gray-100 px-3 py-1 text-xs font-semibold uppercase tracking-widest text-gray-500">
+            Your startup journey
+          </span>
+          <h2 className="text-3xl font-bold text-gray-900">Step by step. From zero to running.</h2>
+          <p className="mt-3 text-gray-500 max-w-xl mx-auto">
+            Got an idea? Here's exactly what to set up — in order. Each step builds on the last.
           </p>
         </div>
+
+        {/* Journey progress bar */}
+        {!loading && !error && tools.length > 0 && (
+          <div className="mb-12 flex items-center justify-center gap-0 overflow-x-auto pb-2">
+            {tools.map((_, i) => (
+              <div key={i} className="flex items-center">
+                <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white">
+                  {i + 1}
+                </div>
+                {i < tools.length - 1 && (
+                  <div className="h-px w-6 flex-shrink-0 bg-gray-200 sm:w-8" />
+                )}
+              </div>
+            ))}
+          </div>
+        )}
 
         {loading && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -139,17 +158,10 @@ export function Home() {
 
         {!loading && !error && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {tools.map((tool) => (
-              <ToolCard key={tool.id} tool={tool} />
+            {tools.map((tool, i) => (
+              <ToolCard key={tool.id} tool={tool} stepNumber={i + 1} />
             ))}
           </div>
-        )}
-
-        {/* Affiliate disclaimer */}
-        {!loading && !error && tools.length > 0 && (
-          <p className="mt-12 text-center text-xs text-gray-400">
-            Some links are affiliate links. We only recommend tools we'd actually use ourselves.
-          </p>
         )}
       </section>
 
@@ -159,14 +171,14 @@ export function Home() {
           <div className="flex flex-col items-center gap-10 sm:flex-row sm:items-start">
             <img
               src="/nico.jpg"
-              alt="Nico Meibohm"
+              alt="Nikolas Meibohm"
               className="h-28 w-28 flex-shrink-0 rounded-2xl object-cover shadow-sm"
             />
             <div>
               <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-gray-400">
                 Built by
               </p>
-              <h2 className="mb-3 text-2xl font-bold text-gray-900">Nico Meibohm</h2>
+              <h2 className="mb-3 text-2xl font-bold text-gray-900">Nikolas Meibohm</h2>
               <p className="leading-relaxed text-gray-600">
                 I'm a startup coach and founder advisor. Over the years I've helped dozens of
                 early-stage teams get off the ground — from their first pitch to their first

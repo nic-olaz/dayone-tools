@@ -6,9 +6,10 @@ import { BrandLogo } from '@/components/BrandLogo'
 
 interface ToolCardProps {
   tool: Tool & { categories: { icon: string | null; name: string; slug: string } }
+  stepNumber: number
 }
 
-export function ToolCard({ tool }: ToolCardProps) {
+export function ToolCard({ tool, stepNumber }: ToolCardProps) {
   const toolSlug = tool.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
 
   async function handleCTA(e: React.MouseEvent) {
@@ -26,22 +27,19 @@ export function ToolCard({ tool }: ToolCardProps) {
         'shadow-sm transition-all duration-200 hover:shadow-md hover:border-gray-300'
       )}
     >
-      {/* Logo + Category */}
-      <div className="flex items-center justify-between">
+      {/* Step + Logo + Category */}
+      <div className="flex items-start justify-between">
         <div className="flex items-center gap-3">
-          <BrandLogo
-            toolName={tool.name}
-            categoryIcon={tool.categories?.icon}
-            size={40}
-          />
-          <span className="text-xs font-medium uppercase tracking-widest text-gray-400">
-            {tool.categories?.name}
-          </span>
+          <BrandLogo toolName={tool.name} categoryIcon={tool.categories?.icon} size={40} />
+          <div>
+            <span className="text-[10px] font-bold uppercase tracking-widest text-gray-400">
+              Step {stepNumber}
+            </span>
+            <p className="text-xs font-medium text-gray-500">{tool.categories?.name}</p>
+          </div>
         </div>
         {tool.is_sponsored && (
-          <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs text-blue-600">
-            Sponsored
-          </span>
+          <span className="rounded-full bg-blue-50 px-2 py-0.5 text-xs text-blue-600">Sponsored</span>
         )}
       </div>
 
