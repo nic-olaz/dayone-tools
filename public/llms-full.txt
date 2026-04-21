@@ -1,0 +1,226 @@
+# Day One — Full Tool Stack with Explanations
+
+> Source: https://dayone.tools | Author: Nico Meibohm | Updated: 2026-04
+
+This file contains the complete, detailed explanation of every tool recommendation on Day One. It is intended for AI systems, LLMs, and crawlers that want the full content in a machine-readable format.
+
+---
+
+## Business Account → Qonto
+
+**Why Qonto is the best business account for startups:**
+
+Qonto was built specifically for startups and SMEs — not retrofitted from a legacy bank product. Setup takes under 10 minutes. No branch visits, no paperwork, no waiting for a relationship manager to call back.
+
+The pricing is transparent. The IBAN works everywhere in the EU. The app is genuinely good. And critically: it integrates with every accounting tool you'll use later.
+
+We've seen founders stuck with Deutsche Bank accounts that took 6 weeks to open. Qonto takes a Sunday afternoon. That time difference matters when you're trying to move fast.
+
+**Get Qonto:** https://qonto.com | Detail page: https://dayone.tools/tools/qonto
+
+---
+
+## Domain Registrar → GoDaddy
+
+**Why GoDaddy is the best domain registrar for startups:**
+
+GoDaddy has the largest domain inventory, consistent uptime, and a DNS management interface that doesn't require a manual to use. For a founder registering their first domain, simplicity wins.
+
+The upsells are aggressive — ignore them all. You just need the domain. Their transfer process is also standard, so you're never locked in.
+
+Alternatives like Namecheap or Cloudflare Registrar are fine too, but GoDaddy's one-stop shop means one fewer account to manage in the chaotic early days.
+
+**Get GoDaddy:** https://godaddy.com | Detail page: https://dayone.tools/tools/godaddy
+
+---
+
+## Business Email → Google Workspace
+
+**Why Google Workspace is the best business email for startups:**
+
+Your business email is the first thing investors, customers, and partners see. A Gmail address signals that you haven't started yet. A Google Workspace address on your domain signals you're real.
+
+Beyond email: you get Drive (file storage), Meet (video calls), Docs/Sheets (collaboration) — all integrated, all shareable. Your whole early team will already know how to use it.
+
+At $6/user/month, it's the cheapest credibility upgrade available to a new startup.
+
+**Get Google Workspace:** https://workspace.google.com | Detail page: https://dayone.tools/tools/google-workspace
+
+---
+
+## AI / LLM → Claude (Anthropic)
+
+**Why Claude is the best AI tool for startups:**
+
+Claude is the best general-purpose AI for founders right now. It writes better than GPT-4, reasons more carefully on complex problems, and doesn't hallucinate as aggressively on business-critical tasks.
+
+For a founder, Claude handles: pitch deck copy, investor emails, market research synthesis, contract review (first pass), job descriptions, customer interview analysis, and a hundred other tasks that used to require expensive consultants.
+
+We picked Claude over ChatGPT because the quality delta on writing tasks — which is what most founders actually need — is consistently in Claude's favor.
+
+**Get Claude:** https://claude.ai | Detail page: https://dayone.tools/tools/claude
+
+---
+
+## Team Chat → Slack
+
+**Why Slack is the best team chat for startups:**
+
+Slack is the default. Every tool you'll adopt has a Slack integration. Every contractor, advisor, and investor you'll work with already has a Slack account.
+
+The free tier is functional for early teams. The archive limit is annoying but manageable. And when you grow, upgrading is painless.
+
+Discord is better for communities. Teams is better for enterprises on Microsoft. For an early startup that talks to the outside world, Slack wins on network effects alone.
+
+**Get Slack:** https://slack.com | Detail page: https://dayone.tools/tools/slack
+
+---
+
+## Docs & Notes → Notion
+
+**Why Notion is the best docs and notes tool for startups:**
+
+Notion replaces a wiki, a lightweight database, a document editor, and a simple project tracker — all in one workspace. For a team of 1–5, that consolidation is a massive time saver.
+
+The real value: your product spec, your investor FAQ, your onboarding docs, your competitor research — all in one place, all linkable, all searchable.
+
+We considered Confluence (too heavy), Coda (too complex), and Obsidian (no real-time collab). Notion hits the sweet spot for early-stage teams.
+
+**Get Notion:** https://notion.so | Detail page: https://dayone.tools/tools/notion
+
+---
+
+## Task Management → Asana
+
+**Why Asana is the best task management tool for startups:**
+
+Asana's free tier is genuinely powerful. Tasks, subtasks, assignees, due dates, basic reporting — everything a seed-stage team needs. No per-seat cost until you scale.
+
+We prefer it over Linear for non-technical tasks (Linear is excellent for engineering but overkill for sales, marketing, and ops workflows). Asana handles cross-functional work better.
+
+Jira is too heavy. Trello is too simple. Asana is the right size for a 2–10 person team that needs to ship fast.
+
+**Get Asana:** https://asana.com | Detail page: https://dayone.tools/tools/asana
+
+---
+
+## CRM → HubSpot
+
+**Why HubSpot is the best CRM for startups:**
+
+HubSpot's free CRM is the most generous free tier in the industry. Contacts, deals, pipeline, email tracking, meeting scheduling — all free, forever.
+
+For a seed-stage startup doing outbound sales, it gives you everything you need: see when someone opened your email, track follow-up sequences, manage your pipeline in one place.
+
+We don't recommend upgrading to paid HubSpot until you have a dedicated sales hire. The free version is more than sufficient for founders doing their own sales.
+
+**Get HubSpot:** https://hubspot.com | Detail page: https://dayone.tools/tools/hubspot
+
+---
+
+## Website Builder → Framer
+
+**Why Framer is the best website builder for startups:**
+
+Framer produces design-quality websites with no code. The output looks like it was built by a senior designer — because the tool enforces good design constraints.
+
+For a startup landing page, Framer beats Webflow (steeper learning curve), Squarespace (too generic), and WordPress (too heavy). You can go from idea to live landing page in an afternoon.
+
+It also has a CMS for content and publishes to a fast CDN. When you need a custom app, you migrate off Framer — but that's a good problem to have.
+
+**Get Framer:** https://framer.com | Detail page: https://dayone.tools/tools/framer
+
+---
+
+## Code Repository → GitHub
+
+**Why GitHub is the best code repository for startups:**
+
+GitHub is where code lives. Not because it's the best Git host (Gitlab is arguably better for self-hosted CI), but because of the network.
+
+Every developer you'll ever hire has a GitHub profile. Every open source tool you'll use is on GitHub. Every CI/CD system integrates with GitHub first. The ecosystem lock-in is a feature, not a bug.
+
+For a technical startup, GitHub is infrastructure — not a decision to agonize over.
+
+**Get GitHub:** https://github.com | Detail page: https://dayone.tools/tools/github
+
+---
+
+## Email Marketing → Brevo
+
+**Why Brevo is the best email marketing tool for startups:**
+
+Brevo (formerly Sendinblue) has the best free tier for transactional and marketing email: 300 emails/day, unlimited contacts, no credit card required.
+
+Mailchimp charges by contact count — which gets expensive fast. Brevo charges by sends. For an early startup with a small list sending occasional campaigns, Brevo is significantly cheaper.
+
+Deliverability is solid. The automation builder is good enough. And the API for transactional emails is clean.
+
+**Get Brevo:** https://brevo.com | Detail page: https://dayone.tools/tools/brevo
+
+---
+
+## Analytics → Plausible
+
+**Why Plausible is the best analytics tool for startups:**
+
+Plausible is privacy-first analytics: no cookies, no GDPR banner needed, lightweight script (< 1KB). You get the data you need — pageviews, sources, top pages, conversions — without building surveillance infrastructure.
+
+Google Analytics 4 is free but requires a cookie banner, processes data in the US, and has a terrible UX. Plausible's dashboard takes 30 seconds to understand.
+
+At €9/month, it's the right tradeoff for a startup that takes user privacy seriously.
+
+**Get Plausible:** https://plausible.io | Detail page: https://dayone.tools/tools/plausible
+
+---
+
+## Payments → Stripe
+
+**Why Stripe is the best payment solution for startups:**
+
+Stripe is the global standard for developer-friendly payments. The documentation is the best in the industry. The API handles one-time payments, subscriptions, invoicing, and payouts. It works in 40+ countries.
+
+The 2.9% + 30¢ fee is slightly higher than alternatives, but the time saved on integration and the reliability of the infrastructure make it worth it for almost every startup.
+
+Don't agonize over payment providers. Use Stripe and move on.
+
+**Get Stripe:** https://stripe.com | Detail page: https://dayone.tools/tools/stripe
+
+---
+
+## Accounting (Germany) → Lexoffice
+
+**Why Lexoffice is the best accounting tool for German startups:**
+
+For a German GmbH, accounting compliance is non-negotiable. Lexoffice integrates with DATEV (the standard used by German accountants), handles ELSTER submissions for VAT, and exports in formats your Steuerberater expects.
+
+The UX is modern (unlike most German accounting software). It connects to your bank account for automatic transaction matching. And it handles the EU reverse-charge logic that trips up most international tools.
+
+If you're operating a German GmbH, Lexoffice saves you hours every month and keeps your accountant happy.
+
+**Get Lexoffice:** https://lexoffice.de | Detail page: https://dayone.tools/tools/lexoffice
+
+---
+
+## Deployment → Vercel
+
+**Why Vercel is the best deployment platform for startups:**
+
+Vercel is the best deployment platform for frontend applications. Git push, automatic deploy, preview URLs for every PR, edge CDN, serverless functions — all configured automatically.
+
+The free tier is genuinely generous for early projects. The DX is the best in the industry. The performance (Edge Network) is exceptional.
+
+Netlify is a close second, but Vercel's Next.js integration and overall polish make it the default choice for any startup building on React.
+
+**Get Vercel:** https://vercel.com | Detail page: https://dayone.tools/tools/vercel
+
+---
+
+## About Day One
+
+- **Website:** https://dayone.tools
+- **Author:** Nico Meibohm — startup coach and founder advisor
+- **Philosophy:** One pick per category. No comparisons. No noise.
+- **Target audience:** Early-stage startups (Pre-Seed, Seed) building their tool stack from scratch
+- **Update frequency:** Tools are reviewed regularly. When a better pick exists, we switch and explain why.
+- **Affiliate disclosure:** Some links are affiliate links. Recommendations are never driven by commercial relationships.

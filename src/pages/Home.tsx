@@ -2,8 +2,49 @@ import { useEffect, useRef, useState } from 'react'
 import { ChevronDown } from 'lucide-react'
 import { supabase, type Tool, type Category } from '@/lib/supabase'
 import { ToolCard } from '@/components/ToolCard'
+import { SEO } from '@/components/SEO'
 
 type ToolWithCategory = Tool & { categories: Category }
+
+const homeJsonLd = [
+  {
+    '@context': 'https://schema.org',
+    '@type': 'WebSite',
+    name: 'Day One',
+    url: 'https://dayone.tools',
+    description: 'The opinionated startup tool directory. One pick per category. No comparisons. No noise.',
+    author: {
+      '@type': 'Person',
+      name: 'Nico Meibohm',
+      url: 'https://lmno.de',
+      jobTitle: 'Startup Coach & Founder Advisor',
+    },
+  },
+  {
+    '@context': 'https://schema.org',
+    '@type': 'ItemList',
+    name: 'Best Tools for Startups',
+    description: 'One recommended tool per category for early-stage startups.',
+    numberOfItems: 15,
+    itemListElement: [
+      { '@type': 'ListItem', position: 1,  name: 'Qonto',           description: 'Best business account for startups',      url: 'https://dayone.tools/tools/qonto' },
+      { '@type': 'ListItem', position: 2,  name: 'GoDaddy',         description: 'Best domain registrar for startups',       url: 'https://dayone.tools/tools/godaddy' },
+      { '@type': 'ListItem', position: 3,  name: 'Google Workspace', description: 'Best business email for startups',        url: 'https://dayone.tools/tools/google-workspace' },
+      { '@type': 'ListItem', position: 4,  name: 'Claude',           description: 'Best AI / LLM for startups',              url: 'https://dayone.tools/tools/claude' },
+      { '@type': 'ListItem', position: 5,  name: 'Slack',            description: 'Best team chat for startups',             url: 'https://dayone.tools/tools/slack' },
+      { '@type': 'ListItem', position: 6,  name: 'Notion',           description: 'Best docs and notes tool for startups',   url: 'https://dayone.tools/tools/notion' },
+      { '@type': 'ListItem', position: 7,  name: 'Asana',            description: 'Best task management for startups',       url: 'https://dayone.tools/tools/asana' },
+      { '@type': 'ListItem', position: 8,  name: 'HubSpot',          description: 'Best CRM for startups',                   url: 'https://dayone.tools/tools/hubspot' },
+      { '@type': 'ListItem', position: 9,  name: 'Framer',           description: 'Best website builder for startups',       url: 'https://dayone.tools/tools/framer' },
+      { '@type': 'ListItem', position: 10, name: 'GitHub',           description: 'Best code repository for startups',       url: 'https://dayone.tools/tools/github' },
+      { '@type': 'ListItem', position: 11, name: 'Brevo',            description: 'Best email marketing for startups',       url: 'https://dayone.tools/tools/brevo' },
+      { '@type': 'ListItem', position: 12, name: 'Plausible',        description: 'Best analytics for startups',             url: 'https://dayone.tools/tools/plausible' },
+      { '@type': 'ListItem', position: 13, name: 'Stripe',           description: 'Best payment solution for startups',      url: 'https://dayone.tools/tools/stripe' },
+      { '@type': 'ListItem', position: 14, name: 'Lexoffice',        description: 'Best accounting software for startups',   url: 'https://dayone.tools/tools/lexoffice' },
+      { '@type': 'ListItem', position: 15, name: 'Vercel',           description: 'Best deployment platform for startups',   url: 'https://dayone.tools/tools/vercel' },
+    ],
+  },
+]
 
 export function Home() {
   const [tools, setTools] = useState<ToolWithCategory[]>([])
@@ -36,6 +77,11 @@ export function Home() {
   }
 
   return (
+    <>
+    <SEO
+      canonical="/"
+      jsonLd={homeJsonLd}
+    />
     <main className="flex-1">
       {/* Hero */}
       <section className="flex min-h-[calc(100svh-56px)] flex-col items-center justify-center px-4 text-center">
@@ -142,5 +188,6 @@ export function Home() {
         </div>
       </section>
     </main>
+    </>
   )
 }

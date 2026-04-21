@@ -3,6 +3,7 @@ import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, ExternalLink, MessageSquare, Send } from 'lucide-react'
 import { supabase, trackClick, type Tool, type Category } from '@/lib/supabase'
 import { BrandLogo } from '@/components/BrandLogo'
+import { SEO } from '@/components/SEO'
 
 type ToolWithCategory = Tool & { categories: Category }
 
@@ -206,6 +207,24 @@ export function ToolDetail() {
   }
 
   const whyText = getWhyText(tool.name, tool.why)
+  const toolSlug = tool.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+
+  const toolJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'SoftwareApplication',
+    name: tool.name,
+    description: whyText.split('\n\n')[0],
+    applicationCategory: 'BusinessApplication',
+    url: tool.website_url ?? undefined,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier available' },
+    review: {
+      '@type': 'Review',
+      reviewBody: whyText,
+      author: { '@type': 'Person', name: 'Nico Meibohm', url: 'https://lmno.de' },
+      reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
+      publisher: { '@type': 'Organization', name: 'Day One', url: 'https://dayone.tools' },
+    },
+  }
 
   async function handleCTA() {
     try { await trackClick(tool!.id) } catch { /* ignore */ }
@@ -213,6 +232,13 @@ export function ToolDetail() {
   }
 
   return (
+    <>
+    <SEO
+      title={`${tool.name} — Best ${tool.categories?.name ?? 'tool'} for startups`}
+      description={`Why ${tool.name} is the best ${tool.categories?.name?.toLowerCase() ?? 'tool'} for early-stage startups. ${tool.tagline}`}
+      canonical={`/tools/${toolSlug}`}
+      jsonLd={toolJsonLd}
+    />
     <main className="flex-1">
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:px-8">
 
@@ -270,5 +296,6 @@ export function ToolDetail() {
         <CommentsSection toolId={tool.id} />
       </div>
     </main>
+    </>
   )
 }

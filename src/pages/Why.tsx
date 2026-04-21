@@ -1,5 +1,22 @@
+import { SEO } from '@/components/SEO'
+
 export function Why() {
   return (
+    <>
+    <SEO
+      title="Why opinionated recommendations?"
+      description="Comparison paralysis kills startups. We pick one tool per category and stand behind it. Here's why that's better than a list of five options."
+      canonical="/why"
+      jsonLd={{
+        '@context': 'https://schema.org',
+        '@type': 'Article',
+        headline: 'Why opinionated tool recommendations for startups?',
+        description: 'Comparison paralysis kills startups. One pick per category beats a list of five options every time.',
+        author: { '@type': 'Person', name: 'Nico Meibohm', url: 'https://lmno.de' },
+        publisher: { '@type': 'Organization', name: 'Day One', url: 'https://dayone.tools' },
+        url: 'https://dayone.tools/why',
+      }}
+    />
     <main className="flex-1">
       <div className="mx-auto max-w-2xl px-4 py-24 sm:px-6 lg:px-8">
 
@@ -94,5 +111,6 @@ export function Why() {
         </div>
       </div>
     </main>
+    </>
   )
 }
