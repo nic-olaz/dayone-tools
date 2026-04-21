@@ -8,16 +8,16 @@ export function Why() {
           <span className="text-xs font-medium uppercase tracking-widest text-accent">
             Our philosophy
           </span>
-          <h1 className="mt-4 text-4xl font-bold tracking-tight text-white sm:text-5xl">
+          <h1 className="mt-4 text-4xl font-bold tracking-tight text-gray-900 sm:text-5xl">
             Why Day One?
           </h1>
         </div>
 
-        <div className="space-y-16 text-[#A1A1AA]">
+        <div className="space-y-16 text-gray-600">
 
           {/* The problem */}
           <section>
-            <h2 className="mb-4 text-xl font-semibold text-white">The problem</h2>
+            <h2 className="mb-4 text-xl font-semibold text-gray-900">The problem</h2>
             <p className="leading-relaxed">
               Comparison paralysis kills startups. The average founder spends 40+ hours
               picking tools before writing a single line of code — reading reviews,
@@ -31,7 +31,7 @@ export function Why() {
 
           {/* Our approach */}
           <section>
-            <h2 className="mb-4 text-xl font-semibold text-white">Our approach</h2>
+            <h2 className="mb-4 text-xl font-semibold text-gray-900">Our approach</h2>
             <p className="leading-relaxed">
               We've built startups. We've used all of these. These are the survivors — the
               tools that were still open in our browser six months after we first signed up.
@@ -45,7 +45,7 @@ export function Why() {
 
           {/* The rule */}
           <section className="rounded-xl border border-accent/20 bg-accent/5 p-8">
-            <h2 className="mb-4 text-xl font-semibold text-white">The rule</h2>
+            <h2 className="mb-4 text-xl font-semibold text-gray-900">The rule</h2>
             <p className="leading-relaxed">
               One pick per category. Always. If something better comes along,
               we switch — and we tell you why. No silent updates. No hedging.
@@ -58,7 +58,7 @@ export function Why() {
 
           {/* Transparency */}
           <section>
-            <h2 className="mb-4 text-xl font-semibold text-white">Transparency</h2>
+            <h2 className="mb-4 text-xl font-semibold text-gray-900">Transparency</h2>
             <p className="leading-relaxed">
               Some links are affiliate links. That means we earn a small commission
               if you sign up through Day One. This helps us maintain the site.
@@ -73,32 +73,21 @@ export function Why() {
 
           {/* Who built this */}
           <section>
-            <h2 className="mb-4 text-xl font-semibold text-white">Who built this</h2>
+            <h2 className="mb-4 text-xl font-semibold text-gray-900">Who built this</h2>
             <p className="leading-relaxed">
               Built by{' '}
               <a
-                href="https://linkedin.com/in/nicomeibohm"
+                href="https://lmno.de"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="text-white underline underline-offset-4 hover:text-accent transition-colors"
+                className="text-gray-900 underline underline-offset-4 hover:text-accent transition-colors"
               >
                 Nico Meibohm
               </a>
-              , startup coach at{' '}
-              <a
-                href="https://qimp.de"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-white underline underline-offset-4 hover:text-accent transition-colors"
-              >
-                QIMP Incubator
-              </a>{' '}
-              in Braunschweig. I work with DeepTech founders every day — helping them
-              get from idea to investor-ready.
+              , startup coach and founder advisor. I've helped dozens of early-stage startups get off the ground — from their first pitch deck to their first funding round.
             </p>
             <p className="mt-4 leading-relaxed">
-              This is the stack I hand to every founder on Day 1. I got tired of
-              repeating myself. Now it's a website.
+              This is the stack I hand to every founder on Day 1. I got tired of repeating myself. Now it's a website.
             </p>
           </section>
 

@@ -5,14 +5,14 @@ export function Navbar() {
   const location = useLocation()
 
   return (
-    <nav className="sticky top-0 z-50 border-b border-[#222222] bg-[#0A0A0A]/90 backdrop-blur-sm">
+    <nav className="sticky top-0 z-50 border-b border-gray-200 bg-white">
       <div className="mx-auto max-w-6xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-14 items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <span className="text-lg font-bold tracking-tight text-white">
+            <span className="text-lg font-bold tracking-tight text-gray-900">
               Day One
             </span>
-            <span className="rounded-full bg-accent/20 px-2 py-0.5 text-xs font-medium text-accent">
+            <span className="rounded-full bg-accent/10 px-2 py-0.5 text-xs font-medium text-accent">
               tools
             </span>
           </Link>
@@ -23,8 +23,8 @@ export function Navbar() {
               className={cn(
                 'text-sm transition-colors',
                 location.pathname === '/'
-                  ? 'text-white'
-                  : 'text-[#A1A1AA] hover:text-white'
+                  ? 'text-gray-900'
+                  : 'text-gray-400 hover:text-gray-900'
               )}
             >
               Stack
@@ -34,8 +34,8 @@ export function Navbar() {
               className={cn(
                 'text-sm transition-colors',
                 location.pathname === '/why'
-                  ? 'text-white'
-                  : 'text-[#A1A1AA] hover:text-white'
+                  ? 'text-gray-900'
+                  : 'text-gray-400 hover:text-gray-900'
               )}
             >
               Why
