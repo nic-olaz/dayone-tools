@@ -13,8 +13,8 @@ interface SEOProps {
 }
 
 export function SEO({ title, description, canonical, ogImage, jsonLd }: SEOProps) {
-  const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME} — The startup toolkit. One pick per category.`
-  const metaDesc = description ?? 'The opinionated startup tool directory. One pick per category. No comparisons. No noise. Built by startup coach Nico Meibohm.'
+  const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME}: The startup toolkit. One pick per category.`
+  const metaDesc = description ?? 'The opinionated startup tool directory. One pick per category. No comparisons. No noise. Built by startup coach Nicolas Meibohm.'
   const canonicalUrl = canonical ? `${SITE_URL}${canonical}` : SITE_URL
   const image = ogImage ?? DEFAULT_OG_IMAGE
 

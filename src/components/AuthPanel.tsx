@@ -69,7 +69,7 @@ export function AuthPanel({ onSuccess }: AuthPanelProps) {
   if (emailSent) {
     return (
       <div className="rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-sm text-green-700">
-        Check your inbox — we sent you a login link.
+        Check your inbox. We sent you a login link.
       </div>
     )
   }

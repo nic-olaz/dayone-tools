@@ -119,25 +119,9 @@ export function Home() {
           </span>
           <h2 className="text-3xl font-bold text-gray-900">Step by step. From zero to running.</h2>
           <p className="mt-3 text-gray-500 max-w-xl mx-auto">
-            Got an idea? Here's exactly what to set up — in order. Each step builds on the last.
+            Got an idea? Here's exactly what to set up, in order. Each step builds on the last.
           </p>
         </div>
-
-        {/* Journey progress bar */}
-        {!loading && !error && tools.length > 0 && (
-          <div className="mb-12 flex items-center justify-center gap-0 overflow-x-auto pb-2">
-            {tools.map((_, i) => (
-              <div key={i} className="flex items-center">
-                <div className="flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-full bg-gray-900 text-xs font-bold text-white">
-                  {i + 1}
-                </div>
-                {i < tools.length - 1 && (
-                  <div className="h-px w-6 flex-shrink-0 bg-gray-200 sm:w-8" />
-                )}
-              </div>
-            ))}
-          </div>
-        )}
 
         {loading && (
           <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
@@ -181,7 +165,7 @@ export function Home() {
               <h2 className="mb-3 text-2xl font-bold text-gray-900">Nicolas Meibohm</h2>
               <p className="leading-relaxed text-gray-600">
                 I'm a startup coach and founder advisor. Over the years I've helped dozens of
-                early-stage teams get off the ground — from their first pitch to their first
+                early-stage teams get off the ground, from their first pitch to their first
                 funding round. Every time someone asked "what tools should I use?", I gave them
                 the same list. So I turned it into a website.
               </p>

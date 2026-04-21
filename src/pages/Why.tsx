@@ -12,7 +12,7 @@ export function Why() {
         '@type': 'Article',
         headline: 'Why opinionated tool recommendations for startups?',
         description: 'Comparison paralysis kills startups. One pick per category beats a list of five options every time.',
-        author: { '@type': 'Person', name: 'Nico Meibohm', url: 'https://lmno.de' },
+        author: { '@type': 'Person', name: 'Nicolas Meibohm', url: 'https://lmno.de' },
         publisher: { '@type': 'Organization', name: 'Day One', url: 'https://dayone.tools' },
         url: 'https://dayone.tools/why',
       }}
@@ -37,7 +37,7 @@ export function Why() {
             <h2 className="mb-4 text-xl font-semibold text-gray-900">The problem</h2>
             <p className="leading-relaxed">
               Comparison paralysis kills startups. The average founder spends 40+ hours
-              picking tools before writing a single line of code — reading reviews,
+              picking tools before writing a single line of code, reading reviews,
               watching comparison videos, joining Reddit threads, asking in Slack groups.
               All of that energy goes into a decision that, frankly, doesn't matter that much.
             </p>
@@ -50,7 +50,7 @@ export function Why() {
           <section>
             <h2 className="mb-4 text-xl font-semibold text-gray-900">Our approach</h2>
             <p className="leading-relaxed">
-              We've built startups. We've used all of these. These are the survivors — the
+              We've built startups. We've used all of these. These are the survivors: the
               tools that were still open in our browser six months after we first signed up.
               The ones we still recommend when a founder asks at 11pm.
             </p>
@@ -65,7 +65,7 @@ export function Why() {
             <h2 className="mb-4 text-xl font-semibold text-gray-900">The rule</h2>
             <p className="leading-relaxed">
               One pick per category. Always. If something better comes along,
-              we switch — and we tell you why. No silent updates. No hedging.
+              we switch, and we tell you why. No silent updates. No hedging.
             </p>
             <p className="mt-4 leading-relaxed">
               We'd rather be decisively wrong and correct ourselves than give you
@@ -82,7 +82,7 @@ export function Why() {
             </p>
             <p className="mt-4 leading-relaxed">
               That said: we only recommend tools we'd actually use ourselves. The
-              affiliate relationship follows the recommendation — it never drives it.
+              affiliate relationship follows the recommendation. It never drives it.
               If a tool stops being the best pick, we replace it regardless of
               the commercial relationship.
             </p>
@@ -99,9 +99,9 @@ export function Why() {
                 rel="noopener noreferrer"
                 className="text-gray-900 underline underline-offset-4 hover:text-accent transition-colors"
               >
-                Nico Meibohm
+                Nicolas Meibohm
               </a>
-              , startup coach and founder advisor. I've helped dozens of early-stage startups get off the ground — from their first pitch deck to their first funding round.
+              , startup coach and founder advisor. I've helped dozens of early-stage startups get off the ground, from their first pitch deck to their first funding round.
             </p>
             <p className="mt-4 leading-relaxed">
               This is the stack I hand to every founder on Day 1. I got tired of repeating myself. Now it's a website.

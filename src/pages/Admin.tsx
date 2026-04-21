@@ -187,7 +187,7 @@ export function Admin() {
                         )}
                       </div>
                       <p className="mt-0.5 truncate text-sm text-[#A1A1AA]">
-                        {tool.affiliate_url ?? '—'}
+                        {tool.affiliate_url ?? '(none)'}
                       </p>
                     </div>
                     <Button

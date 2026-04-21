@@ -7,7 +7,7 @@ export function Footer() {
         <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
           <div className="flex items-center gap-2">
             <span className="font-semibold text-gray-900">Day One</span>
-            <span className="text-gray-400">—</span>
+            <span className="text-gray-300">·</span>
             <span className="text-sm text-gray-400">dayone.tools</span>
           </div>
 
