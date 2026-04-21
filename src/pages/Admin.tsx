@@ -1,9 +1,10 @@
 import { useEffect, useState } from 'react'
+import type { User } from '@supabase/supabase-js'
 import { supabase, type Tool, type Category } from '@/lib/supabase'
 import { Button } from '@/components/ui/button'
-import { cn } from '@/lib/utils'
+import { LogOut, Loader2 } from 'lucide-react'
 
-const ADMIN_PASSWORD = 'dayone2026'
+const ALLOWED_EMAILS = ['nicolas.meibohm@gmail.com']
 
 type ToolWithCategory = Tool & { categories: Category }
 
@@ -14,10 +15,21 @@ interface EditState {
   is_active: boolean
 }
 
+function GoogleIcon() {
+  return (
+    <svg width="18" height="18" viewBox="0 0 24 24" aria-hidden="true">
+      <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
+      <path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.77c-.98.66-2.23 1.06-3.71 1.06-2.86 0-5.29-1.93-6.16-4.53H2.18v2.84C3.99 20.53 7.7 23 12 23z"/>
+      <path fill="#FBBC05" d="M5.84 14.09c-.22-.66-.35-1.36-.35-2.09s.13-1.43.35-2.09V7.07H2.18C1.43 8.55 1 10.22 1 12s.43 3.45 1.18 4.93l2.85-2.22.81-.62z"/>
+      <path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1 7.7 1 3.99 3.47 2.18 7.07l3.66 2.84c.87-2.6 3.3-4.53 6.16-4.53z"/>
+    </svg>
+  )
+}
+
 export function Admin() {
-  const [authed, setAuthed] = useState(false)
-  const [password, setPassword] = useState('')
-  const [authError, setAuthError] = useState(false)
+  const [user, setUser] = useState<User | null>(null)
+  const [loadingAuth, setLoadingAuth] = useState(true)
+  const [signingIn, setSigningIn] = useState(false)
 
   const [tools, setTools] = useState<ToolWithCategory[]>([])
   const [loading, setLoading] = useState(false)
@@ -26,34 +38,45 @@ export function Admin() {
   const [saving, setSaving] = useState(false)
   const [saveMsg, setSaveMsg] = useState<string | null>(null)
 
-  function handleLogin(e: React.FormEvent) {
-    e.preventDefault()
-    if (password === ADMIN_PASSWORD) {
-      setAuthed(true)
-      setAuthError(false)
-    } else {
-      setAuthError(true)
-    }
-  }
+  // Auth state
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+      setLoadingAuth(false)
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  // Fetch tools when authed
+  const isAdmin = !!user && ALLOWED_EMAILS.includes(user.email ?? '')
 
   useEffect(() => {
-    if (!authed) return
+    if (!isAdmin) return
+    setLoading(true)
+    supabase
+      .from('tools')
+      .select('*, categories(*)')
+      .order('order_index', { referencedTable: 'categories', ascending: true })
+      .then(({ data, error }) => {
+        if (!error) setTools((data as ToolWithCategory[]) ?? [])
+        setLoading(false)
+      })
+  }, [isAdmin])
 
-    async function fetchTools() {
-      setLoading(true)
-      const { data, error } = await supabase
-        .from('tools')
-        .select('*, categories(*)')
-        .order('order_index', { referencedTable: 'categories', ascending: true })
+  async function handleSignIn() {
+    setSigningIn(true)
+    await supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: window.location.href },
+    })
+  }
 
-      if (!error) {
-        setTools((data as ToolWithCategory[]) ?? [])
-      }
-      setLoading(false)
-    }
-
-    fetchTools()
-  }, [authed])
+  async function handleSignOut() {
+    await supabase.auth.signOut()
+  }
 
   function startEdit(tool: ToolWithCategory) {
     setEditingId(tool.id)
@@ -75,7 +98,6 @@ export function Admin() {
     if (!editState) return
     setSaving(true)
     setSaveMsg(null)
-
     const { error } = await supabase
       .from('tools')
       .update({
@@ -93,13 +115,7 @@ export function Admin() {
       setTools((prev) =>
         prev.map((t) =>
           t.id === toolId
-            ? {
-                ...t,
-                tagline: editState.tagline,
-                why_short: editState.why_short || null,
-                affiliate_url: editState.affiliate_url || null,
-                is_active: editState.is_active,
-              }
+            ? { ...t, tagline: editState.tagline, why_short: editState.why_short || null, affiliate_url: editState.affiliate_url || null, is_active: editState.is_active }
             : t
         )
       )
@@ -107,163 +123,126 @@ export function Admin() {
       setEditingId(null)
       setEditState(null)
     }
-
     setSaving(false)
   }
 
-  // ── Login screen ──────────────────────────────────────────────────────────
-  if (!authed) {
+  // ── Loading ───────────────────────────────────────────────────────────────
+  if (loadingAuth) {
+    return (
+      <main className="flex flex-1 items-center justify-center">
+        <Loader2 size={24} className="animate-spin text-[#A1A1AA]" />
+      </main>
+    )
+  }
+
+  // ── Not signed in ─────────────────────────────────────────────────────────
+  if (!user) {
     return (
       <main className="flex flex-1 items-center justify-center px-4">
-        <div className="w-full max-w-sm">
-          <h1 className="mb-8 text-2xl font-bold text-white">Admin</h1>
-          <form onSubmit={handleLogin} className="space-y-4">
-            <div>
-              <label htmlFor="password" className="mb-1.5 block text-sm text-[#A1A1AA]">
-                Password
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={cn(
-                  'w-full rounded-md border bg-[#111111] px-3 py-2 text-sm text-white outline-none',
-                  'focus:ring-1 focus:ring-accent',
-                  authError ? 'border-red-500' : 'border-[#222222]'
-                )}
-                autoFocus
-              />
-              {authError && (
-                <p className="mt-1.5 text-xs text-red-400">Incorrect password.</p>
-              )}
-            </div>
-            <Button type="submit" className="w-full">
-              Log in
-            </Button>
-          </form>
+        <div className="w-full max-w-sm text-center">
+          <div className="mb-2 flex items-center justify-center">
+            <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-gray-900 text-xl font-bold text-white">1</div>
+          </div>
+          <h1 className="mb-2 text-2xl font-bold text-white">Admin</h1>
+          <p className="mb-8 text-sm text-[#A1A1AA]">Sign in with your Google account to continue.</p>
+          <button
+            onClick={handleSignIn}
+            disabled={signingIn}
+            className="flex w-full items-center justify-center gap-3 rounded-xl border border-[#333] bg-[#111] px-5 py-3 text-sm font-medium text-white transition-colors hover:bg-[#1a1a1a] disabled:opacity-50"
+          >
+            {signingIn ? <Loader2 size={16} className="animate-spin" /> : <GoogleIcon />}
+            Continue with Google
+          </button>
         </div>
       </main>
     )
   }
 
-  // ── Admin table ───────────────────────────────────────────────────────────
+  // ── Signed in but not authorized ──────────────────────────────────────────
+  if (!isAdmin) {
+    return (
+      <main className="flex flex-1 items-center justify-center px-4">
+        <div className="w-full max-w-sm text-center">
+          <p className="mb-2 text-white">Access denied.</p>
+          <p className="mb-6 text-sm text-[#A1A1AA]">{user.email} is not an admin account.</p>
+          <button
+            onClick={handleSignOut}
+            className="flex items-center gap-2 mx-auto text-sm text-[#A1A1AA] hover:text-white transition-colors"
+          >
+            <LogOut size={14} /> Sign out
+          </button>
+        </div>
+      </main>
+    )
+  }
+
+  // ── Admin panel ───────────────────────────────────────────────────────────
   return (
     <main className="mx-auto max-w-6xl px-4 py-12 sm:px-6 lg:px-8">
       <div className="mb-8 flex items-center justify-between">
         <h1 className="text-2xl font-bold text-white">Tool Admin</h1>
-        {saveMsg && (
-          <span className="text-sm text-[#A1A1AA]">{saveMsg}</span>
-        )}
+        <div className="flex items-center gap-4">
+          {saveMsg && <span className="text-sm text-[#A1A1AA]">{saveMsg}</span>}
+          <button
+            onClick={handleSignOut}
+            className="flex items-center gap-1.5 text-xs text-[#A1A1AA] hover:text-white transition-colors"
+          >
+            <LogOut size={13} /> Sign out
+          </button>
+        </div>
       </div>
 
-      {loading && (
-        <p className="text-[#A1A1AA]">Loading tools...</p>
-      )}
+      {loading && <p className="text-[#A1A1AA]">Loading tools...</p>}
 
       {!loading && (
         <div className="space-y-2">
           {tools.map((tool) => {
             const isEditing = editingId === tool.id
-
             return (
-              <div
-                key={tool.id}
-                className="rounded-xl border border-[#222222] bg-[#111111] p-5"
-              >
+              <div key={tool.id} className="rounded-xl border border-[#222222] bg-[#111111] p-5">
                 {!isEditing ? (
-                  /* Row view */
                   <div className="flex items-center gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2">
                         <span className="font-semibold text-white">{tool.name}</span>
-                        <span className="text-xs text-[#A1A1AA]">
-                          {tool.categories?.name}
-                        </span>
+                        <span className="text-xs text-[#A1A1AA]">{tool.categories?.name}</span>
                         {!tool.is_active && (
-                          <span className="rounded-full bg-red-900/30 px-2 py-0.5 text-xs text-red-400">
-                            Inactive
-                          </span>
+                          <span className="rounded-full bg-red-900/30 px-2 py-0.5 text-xs text-red-400">Inactive</span>
                         )}
                       </div>
                       <p className="mt-0.5 truncate text-sm text-[#A1A1AA]">
                         {tool.affiliate_url ?? '(none)'}
                       </p>
                     </div>
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => startEdit(tool)}
-                    >
-                      Edit
-                    </Button>
+                    <Button variant="outline" size="sm" onClick={() => startEdit(tool)}>Edit</Button>
                   </div>
                 ) : (
-                  /* Inline edit form */
                   <div className="space-y-4">
                     <div className="flex items-center justify-between">
                       <span className="font-semibold text-white">{tool.name}</span>
                       <span className="text-xs text-[#A1A1AA]">{tool.categories?.name}</span>
                     </div>
-
                     <div>
                       <label className="mb-1 block text-xs text-[#A1A1AA]">Tagline</label>
-                      <input
-                        type="text"
-                        value={editState!.tagline}
-                        onChange={(e) => setEditState({ ...editState!, tagline: e.target.value })}
-                        className="w-full rounded-md border border-[#222222] bg-[#0A0A0A] px-3 py-2 text-sm text-white outline-none focus:ring-1 focus:ring-accent"
-                      />
+                      <input type="text" value={editState!.tagline} onChange={(e) => setEditState({ ...editState!, tagline: e.target.value })} className="w-full rounded-md border border-[#222222] bg-[#0A0A0A] px-3 py-2 text-sm text-white outline-none focus:ring-1 focus:ring-accent" />
                     </div>
-
                     <div>
                       <label className="mb-1 block text-xs text-[#A1A1AA]">Why (short)</label>
-                      <textarea
-                        value={editState!.why_short}
-                        onChange={(e) => setEditState({ ...editState!, why_short: e.target.value })}
-                        rows={2}
-                        className="w-full rounded-md border border-[#222222] bg-[#0A0A0A] px-3 py-2 text-sm text-white outline-none focus:ring-1 focus:ring-accent resize-none"
-                      />
+                      <textarea value={editState!.why_short} onChange={(e) => setEditState({ ...editState!, why_short: e.target.value })} rows={2} className="w-full rounded-md border border-[#222222] bg-[#0A0A0A] px-3 py-2 text-sm text-white outline-none focus:ring-1 focus:ring-accent resize-none" />
                     </div>
-
                     <div>
                       <label className="mb-1 block text-xs text-[#A1A1AA]">Affiliate URL</label>
-                      <input
-                        type="url"
-                        value={editState!.affiliate_url}
-                        onChange={(e) => setEditState({ ...editState!, affiliate_url: e.target.value })}
-                        className="w-full rounded-md border border-[#222222] bg-[#0A0A0A] px-3 py-2 text-sm text-white outline-none focus:ring-1 focus:ring-accent"
-                      />
+                      <input type="url" value={editState!.affiliate_url} onChange={(e) => setEditState({ ...editState!, affiliate_url: e.target.value })} className="w-full rounded-md border border-[#222222] bg-[#0A0A0A] px-3 py-2 text-sm text-white outline-none focus:ring-1 focus:ring-accent" />
                     </div>
-
                     <div className="flex items-center gap-3">
                       <label className="flex cursor-pointer items-center gap-2 text-sm text-[#A1A1AA]">
-                        <input
-                          type="checkbox"
-                          checked={editState!.is_active}
-                          onChange={(e) => setEditState({ ...editState!, is_active: e.target.checked })}
-                          className="h-4 w-4 rounded border-[#222222] accent-accent"
-                        />
+                        <input type="checkbox" checked={editState!.is_active} onChange={(e) => setEditState({ ...editState!, is_active: e.target.checked })} className="h-4 w-4 rounded border-[#222222] accent-accent" />
                         Active
                       </label>
                     </div>
-
                     <div className="flex gap-2">
-                      <Button
-                        size="sm"
-                        onClick={() => saveEdit(tool.id)}
-                        disabled={saving}
-                      >
-                        {saving ? 'Saving...' : 'Save'}
-                      </Button>
-                      <Button
-                        size="sm"
-                        variant="outline"
-                        onClick={cancelEdit}
-                        disabled={saving}
-                      >
-                        Cancel
-                      </Button>
+                      <Button size="sm" onClick={() => saveEdit(tool.id)} disabled={saving}>{saving ? 'Saving...' : 'Save'}</Button>
+                      <Button size="sm" variant="outline" onClick={cancelEdit} disabled={saving}>Cancel</Button>
                     </div>
                   </div>
                 )}
