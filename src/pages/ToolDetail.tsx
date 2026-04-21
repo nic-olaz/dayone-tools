@@ -2,16 +2,9 @@ import { useEffect, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
 import { ArrowLeft, ExternalLink } from 'lucide-react'
 import { supabase, trackClick, type Tool, type Category } from '@/lib/supabase'
+import { BrandLogo } from '@/components/BrandLogo'
 
 type ToolWithCategory = Tool & { categories: Category }
-
-function getLogoUrl(websiteUrl: string | null): string | null {
-  if (!websiteUrl) return null
-  try {
-    const domain = new URL(websiteUrl).hostname.replace('www.', '')
-    return `https://logo.clearbit.com/${domain}`
-  } catch { return null }
-}
 
 // Fallback why-texts per tool name (used when tool.why is null in DB)
 const WHY_TEXTS: Record<string, string> = {
@@ -42,7 +35,6 @@ export function ToolDetail() {
   const { slug } = useParams<{ slug: string }>()
   const [tool, setTool] = useState<ToolWithCategory | null>(null)
   const [loading, setLoading] = useState(true)
-  const [imgError, setImgError] = useState(false)
 
   useEffect(() => {
     async function fetchTool() {
@@ -85,7 +77,6 @@ export function ToolDetail() {
     )
   }
 
-  const logoUrl = getLogoUrl(tool.website_url)
   const whyText = getWhyText(tool.name, tool.why)
 
   async function handleCTA() {
@@ -107,18 +98,11 @@ export function ToolDetail() {
 
         {/* Header */}
         <div className="mb-10 flex items-start gap-6">
-          {logoUrl && !imgError ? (
-            <img
-              src={logoUrl}
-              alt={`${tool.name} logo`}
-              className="h-20 w-20 rounded-2xl object-contain border border-gray-100 p-2 shadow-sm"
-              onError={() => setImgError(true)}
-            />
-          ) : (
-            <div className="flex h-20 w-20 items-center justify-center rounded-2xl border border-gray-200 bg-gray-50 text-4xl">
-              {tool.categories?.icon ?? '🔧'}
-            </div>
-          )}
+          <BrandLogo
+            toolName={tool.name}
+            categoryIcon={tool.categories?.icon}
+            size={80}
+          />
           <div>
             <span className="text-xs font-medium uppercase tracking-widest text-gray-400">
               {tool.categories?.name}

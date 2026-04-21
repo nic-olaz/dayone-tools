@@ -1,26 +1,14 @@
-import { useState } from 'react'
 import { Link } from 'react-router-dom'
 import { ArrowRight } from 'lucide-react'
 import { trackClick, type Tool } from '@/lib/supabase'
 import { cn } from '@/lib/utils'
+import { BrandLogo } from '@/components/BrandLogo'
 
 interface ToolCardProps {
   tool: Tool & { categories: { icon: string | null; name: string; slug: string } }
 }
 
-function getLogoUrl(websiteUrl: string | null): string | null {
-  if (!websiteUrl) return null
-  try {
-    const domain = new URL(websiteUrl).hostname.replace('www.', '')
-    return `https://logo.clearbit.com/${domain}`
-  } catch {
-    return null
-  }
-}
-
 export function ToolCard({ tool }: ToolCardProps) {
-  const [imgError, setImgError] = useState(false)
-  const logoUrl = getLogoUrl(tool.website_url)
   const toolSlug = tool.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
 
   async function handleCTA(e: React.MouseEvent) {
@@ -41,18 +29,11 @@ export function ToolCard({ tool }: ToolCardProps) {
       {/* Logo + Category */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {logoUrl && !imgError ? (
-            <img
-              src={logoUrl}
-              alt={`${tool.name} logo`}
-              className="h-10 w-10 rounded-xl object-contain"
-              onError={() => setImgError(true)}
-            />
-          ) : (
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gray-100 text-2xl">
-              {tool.categories?.icon ?? '🔧'}
-            </div>
-          )}
+          <BrandLogo
+            toolName={tool.name}
+            categoryIcon={tool.categories?.icon}
+            size={40}
+          />
           <span className="text-xs font-medium uppercase tracking-widest text-gray-400">
             {tool.categories?.name}
           </span>
