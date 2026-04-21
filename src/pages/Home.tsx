@@ -15,7 +15,7 @@ const homeJsonLd = [
     description: 'The opinionated startup tool directory. One pick per category. No comparisons. No noise.',
     author: {
       '@type': 'Person',
-      name: 'Nikolas Meibohm',
+      name: 'Nicolas Meibohm',
       url: 'https://lmno.de',
       jobTitle: 'Startup Coach & Founder Advisor',
     },
@@ -171,14 +171,14 @@ export function Home() {
           <div className="flex flex-col items-center gap-10 sm:flex-row sm:items-start">
             <img
               src="/nico.jpg"
-              alt="Nikolas Meibohm"
+              alt="Nicolas Meibohm"
               className="h-28 w-28 flex-shrink-0 rounded-2xl object-cover shadow-sm"
             />
             <div>
               <p className="mb-1 text-xs font-semibold uppercase tracking-widest text-gray-400">
                 Built by
               </p>
-              <h2 className="mb-3 text-2xl font-bold text-gray-900">Nikolas Meibohm</h2>
+              <h2 className="mb-3 text-2xl font-bold text-gray-900">Nicolas Meibohm</h2>
               <p className="leading-relaxed text-gray-600">
                 I'm a startup coach and founder advisor. Over the years I've helped dozens of
                 early-stage teams get off the ground — from their first pitch to their first
