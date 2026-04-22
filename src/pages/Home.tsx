@@ -1,10 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import { ChevronDown } from 'lucide-react'
-import { supabase, type Tool, type Category } from '@/lib/supabase'
+import { TOOLS } from '@/lib/tools-data'
 import { ToolCard } from '@/components/ToolCard'
 import { SEO } from '@/components/SEO'
-
-type ToolWithCategory = Tool & { categories: Category }
 
 const homeJsonLd = [
   {
@@ -26,51 +24,18 @@ const homeJsonLd = [
     name: 'Best Tools for Startups',
     description: 'One recommended tool per category for early-stage startups.',
     numberOfItems: 15,
-    itemListElement: [
-      { '@type': 'ListItem', position: 1,  name: 'Qonto',           description: 'Best business account for startups',      url: 'https://dayone.tools/tools/qonto' },
-      { '@type': 'ListItem', position: 2,  name: 'GoDaddy',         description: 'Best domain registrar for startups',       url: 'https://dayone.tools/tools/godaddy' },
-      { '@type': 'ListItem', position: 3,  name: 'Google Workspace', description: 'Best business email for startups',        url: 'https://dayone.tools/tools/google-workspace' },
-      { '@type': 'ListItem', position: 4,  name: 'Claude',           description: 'Best AI / LLM for startups',              url: 'https://dayone.tools/tools/claude' },
-      { '@type': 'ListItem', position: 5,  name: 'Slack',            description: 'Best team chat for startups',             url: 'https://dayone.tools/tools/slack' },
-      { '@type': 'ListItem', position: 6,  name: 'Notion',           description: 'Best docs and notes tool for startups',   url: 'https://dayone.tools/tools/notion' },
-      { '@type': 'ListItem', position: 7,  name: 'Asana',            description: 'Best task management for startups',       url: 'https://dayone.tools/tools/asana' },
-      { '@type': 'ListItem', position: 8,  name: 'HubSpot',          description: 'Best CRM for startups',                   url: 'https://dayone.tools/tools/hubspot' },
-      { '@type': 'ListItem', position: 9,  name: 'Framer',           description: 'Best website builder for startups',       url: 'https://dayone.tools/tools/framer' },
-      { '@type': 'ListItem', position: 10, name: 'GitHub',           description: 'Best code repository for startups',       url: 'https://dayone.tools/tools/github' },
-      { '@type': 'ListItem', position: 11, name: 'Brevo',            description: 'Best email marketing for startups',       url: 'https://dayone.tools/tools/brevo' },
-      { '@type': 'ListItem', position: 12, name: 'Plausible',        description: 'Best analytics for startups',             url: 'https://dayone.tools/tools/plausible' },
-      { '@type': 'ListItem', position: 13, name: 'Stripe',           description: 'Best payment solution for startups',      url: 'https://dayone.tools/tools/stripe' },
-      { '@type': 'ListItem', position: 14, name: 'Lexoffice',        description: 'Best accounting software for startups',   url: 'https://dayone.tools/tools/lexoffice' },
-      { '@type': 'ListItem', position: 15, name: 'Vercel',           description: 'Best deployment platform for startups',   url: 'https://dayone.tools/tools/vercel' },
-    ],
+    itemListElement: TOOLS.map(t => ({
+      '@type': 'ListItem',
+      position: t.step,
+      name: t.name,
+      description: t.tagline,
+      url: `https://dayone.tools/tools/${t.slug}`,
+    })),
   },
 ]
 
 export function Home() {
-  const [tools, setTools] = useState<ToolWithCategory[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const gridRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    async function fetchTools() {
-      const { data, error } = await supabase
-        .from('tools')
-        .select('*, categories(*)')
-        .eq('is_active', true)
-        .order('order_index', { referencedTable: 'categories', ascending: true })
-
-      if (error) {
-        setError('Could not load tools. Please try again.')
-        console.error(error)
-      } else {
-        setTools((data as ToolWithCategory[]) ?? [])
-      }
-      setLoading(false)
-    }
-
-    fetchTools()
-  }, [])
 
   function scrollToGrid() {
     gridRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -123,30 +88,11 @@ export function Home() {
           </p>
         </div>
 
-        {loading && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 15 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-52 animate-pulse rounded-xl border border-gray-200 bg-gray-100"
-              />
-            ))}
-          </div>
-        )}
-
-        {error && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-8 text-center text-red-600">
-            {error}
-          </div>
-        )}
-
-        {!loading && !error && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {tools.map((tool, i) => (
-              <ToolCard key={tool.id} tool={tool} stepNumber={i + 1} />
-            ))}
-          </div>
-        )}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {TOOLS.map(tool => (
+            <ToolCard key={tool.slug} tool={tool} />
+          ))}
+        </div>
       </section>
 
       {/* About section */}
