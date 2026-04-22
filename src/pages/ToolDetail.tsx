@@ -1,12 +1,234 @@
+import { useEffect, useRef, useState } from 'react'
 import { useParams, Link } from 'react-router-dom'
-import { ArrowLeft, ExternalLink } from 'lucide-react'
-import { getToolBySlug } from '@/lib/tools-data'
+import { ArrowLeft, ExternalLink, LogOut, MessageSquare, Send } from 'lucide-react'
+import type { User } from '@supabase/supabase-js'
+import { supabase, trackClick, type Tool, type Category } from '@/lib/supabase'
 import { BrandLogo } from '@/components/BrandLogo'
 import { SEO } from '@/components/SEO'
+import { AuthPanel } from '@/components/AuthPanel'
+
+type ToolWithCategory = Tool & { categories: Category }
+
+interface Comment {
+  id: string
+  author_name: string
+  content: string
+  created_at: string
+}
+
+function CommentsSection({ toolId }: { toolId: string }) {
+  const [comments, setComments] = useState<Comment[]>([])
+  const [loadingComments, setLoadingComments] = useState(true)
+  const [user, setUser] = useState<User | null>(null)
+  const [loadingAuth, setLoadingAuth] = useState(true)
+  const [text, setText] = useState('')
+  const [submitting, setSubmitting] = useState(false)
+  const [submitted, setSubmitted] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const formRef = useRef<HTMLFormElement>(null)
+
+  // Auth state
+  useEffect(() => {
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      setUser(session?.user ?? null)
+      setLoadingAuth(false)
+    })
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      setUser(session?.user ?? null)
+    })
+    return () => subscription.unsubscribe()
+  }, [])
+
+  // Comments
+  useEffect(() => {
+    supabase
+      .from('comments')
+      .select('id, author_name, content, created_at')
+      .eq('tool_id', toolId)
+      .eq('is_approved', true)
+      .order('created_at', { ascending: false })
+      .then(({ data }) => {
+        setComments((data as Comment[]) ?? [])
+        setLoadingComments(false)
+      })
+  }, [toolId])
+
+  function displayName(u: User): string {
+    return (
+      u.user_metadata?.full_name ||
+      u.user_metadata?.name ||
+      u.email?.split('@')[0] ||
+      'Anonymous'
+    )
+  }
+
+  async function handleSignOut() {
+    await supabase.auth.signOut()
+  }
+
+  async function handleSubmit(e: React.FormEvent) {
+    e.preventDefault()
+    if (!user) return
+    setError(null)
+    if (text.trim().length < 5) { setError('Comment is too short (at least 5 characters).'); return }
+    setSubmitting(true)
+    const authorName = displayName(user)
+    const { error: err } = await supabase
+      .from('comments')
+      .insert({ tool_id: toolId, author_name: authorName, content: text.trim(), user_id: user.id })
+    setSubmitting(false)
+    if (err) { setError('Could not post comment. Please try again.'); return }
+    setSubmitted(true)
+    setText('')
+    setComments(prev => [{
+      id: crypto.randomUUID(),
+      author_name: authorName,
+      content: text.trim(),
+      created_at: new Date().toISOString(),
+    }, ...prev])
+  }
+
+  return (
+    <div className="mt-12 border-t border-gray-100 pt-10">
+      <div className="mb-6 flex items-center gap-2">
+        <MessageSquare size={18} className="text-gray-400" />
+        <h2 className="text-lg font-semibold text-gray-900">
+          {comments.length > 0 ? `${comments.length} comment${comments.length === 1 ? '' : 's'}` : 'Comments'}
+        </h2>
+      </div>
+
+      {/* Auth / Comment form */}
+      {!loadingAuth && (
+        user ? (
+          submitted ? (
+            <div className="mb-8 rounded-xl border border-green-200 bg-green-50 px-5 py-4 text-sm text-green-700">
+              Thanks for sharing your experience!
+            </div>
+          ) : (
+            <form ref={formRef} onSubmit={handleSubmit} className="mb-10 rounded-2xl border border-gray-200 bg-gray-50 p-6">
+              <div className="mb-4 flex items-center justify-between">
+                <span className="text-sm text-gray-600">
+                  Commenting as <span className="font-semibold text-gray-900">{displayName(user)}</span>
+                </span>
+                <button
+                  type="button"
+                  onClick={handleSignOut}
+                  className="flex items-center gap-1.5 text-xs text-gray-400 hover:text-gray-600 transition-colors"
+                >
+                  <LogOut size={12} /> Sign out
+                </button>
+              </div>
+              <div className="mb-3">
+                <textarea
+                  placeholder="What's your experience with this tool? Tips, gotchas, alternatives you tried..."
+                  value={text}
+                  onChange={e => setText(e.target.value)}
+                  maxLength={1000}
+                  rows={4}
+                  className="w-full rounded-lg border border-gray-200 bg-white px-4 py-2.5 text-sm text-gray-900 placeholder-gray-400 focus:border-gray-400 focus:outline-none resize-none"
+                />
+              </div>
+              {error && <p className="mb-3 text-xs text-red-500">{error}</p>}
+              <button
+                type="submit"
+                disabled={submitting}
+                className="flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-gray-700 disabled:opacity-50"
+              >
+                <Send size={13} />
+                {submitting ? 'Posting…' : 'Post comment'}
+              </button>
+            </form>
+          )
+        ) : (
+          <div className="mb-10">
+            <AuthPanel />
+          </div>
+        )
+      )}
+
+      {/* Comments list */}
+      {loadingComments ? (
+        <div className="space-y-4">
+          {[1,2].map(i => <div key={i} className="h-20 animate-pulse rounded-xl bg-gray-100" />)}
+        </div>
+      ) : comments.length === 0 ? (
+        <p className="text-sm text-gray-400">No comments yet. Be the first to share your experience.</p>
+      ) : (
+        <div className="space-y-4">
+          {comments.map(c => (
+            <div key={c.id} className="rounded-xl border border-gray-100 bg-white p-5 shadow-sm">
+              <div className="mb-2 flex items-center justify-between">
+                <span className="text-sm font-semibold text-gray-900">{c.author_name}</span>
+                <span className="text-xs text-gray-400">
+                  {new Date(c.created_at).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}
+                </span>
+              </div>
+              <p className="text-sm leading-relaxed text-gray-600">{c.content}</p>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Fallback why-texts per tool name (used when tool.why is null in DB)
+const WHY_TEXTS: Record<string, string> = {
+  'qonto': `Qonto was built specifically for startups and SMEs,not retrofitted from a legacy bank product. Setup takes under 10 minutes. No branch visits, no paperwork, no waiting for a relationship manager to call back.\n\nThe pricing is transparent. The IBAN works everywhere in the EU. The app is genuinely good. And critically: it integrates with every accounting tool you'll use later.\n\nWe've seen founders stuck with Deutsche Bank accounts that took 6 weeks to open. Qonto takes a Sunday afternoon. That time difference matters when you're trying to move fast.`,
+  'godaddy': `GoDaddy has the largest domain inventory, consistent uptime, and a DNS management interface that doesn't require a manual to use. For a founder registering their first domain, simplicity wins.\n\nThe upsells are aggressive,ignore them all. You just need the domain. Their transfer process is also standard, so you're never locked in.\n\nAlternatives like Namecheap or Cloudflare Registrar are fine too, but GoDaddy's one-stop shop means one fewer account to manage in the chaotic early days.`,
+  'google-workspace': `Your business email is the first thing investors, customers, and partners see. A Gmail address signals that you haven't started yet. A Google Workspace address on your domain signals you're real.\n\nBeyond email: you get Drive (file storage), Meet (video calls), Docs/Sheets (collaboration),all integrated, all shareable. Your whole early team will already know how to use it.\n\nAt $6/user/month, it's the cheapest credibility upgrade available to a new startup.`,
+  'claude': `Claude is the best general-purpose AI for founders right now. It writes better than GPT-4, reasons more carefully on complex problems, and doesn't hallucinate as aggressively on business-critical tasks.\n\nFor a founder, Claude handles: pitch deck copy, investor emails, market research synthesis, contract review (first pass), job descriptions, customer interview analysis, and a hundred other tasks that used to require expensive consultants.\n\nWe picked Claude over ChatGPT because the quality delta on writing tasks,which is what most founders actually need,is consistently in Claude's favor.`,
+  'slack': `Slack is the default. Every tool you'll adopt has a Slack integration. Every contractor, advisor, and investor you'll work with already has a Slack account.\n\nThe free tier is functional for early teams. The archive limit is annoying but manageable. And when you grow, upgrading is painless.\n\nDiscord is better for communities. Teams is better for enterprises on Microsoft. For an early startup that talks to the outside world, Slack wins on network effects alone.`,
+  'notion': `Notion replaces a wiki, a lightweight database, a document editor, and a simple project tracker,all in one workspace. For a team of 1–5, that consolidation is a massive time saver.\n\nThe real value: your product spec, your investor FAQ, your onboarding docs, your competitor research,all in one place, all linkable, all searchable.\n\nWe considered Confluence (too heavy), Coda (too complex), and Obsidian (no real-time collab). Notion hits the sweet spot for early-stage teams.`,
+  'asana': `Asana's free tier is genuinely powerful. Tasks, subtasks, assignees, due dates, basic reporting,everything a seed-stage team needs. No per-seat cost until you scale.\n\nWe prefer it over Linear for non-technical tasks (Linear is excellent for engineering but overkill for sales, marketing, and ops workflows). Asana handles cross-functional work better.\n\nJira is too heavy. Trello is too simple. Asana is the right size for a 2–10 person team that needs to ship fast.`,
+  'hubspot': `HubSpot's free CRM is the most generous free tier in the industry. Contacts, deals, pipeline, email tracking, meeting scheduling,all free, forever.\n\nFor a seed-stage startup doing outbound sales, it gives you everything you need: see when someone opened your email, track follow-up sequences, manage your pipeline in one place.\n\nWe don't recommend upgrading to paid HubSpot until you have a dedicated sales hire. The free version is more than sufficient for founders doing their own sales.`,
+  'framer': `Framer produces design-quality websites with no code. The output looks like it was built by a senior designer,because the tool enforces good design constraints.\n\nFor a startup landing page, Framer beats Webflow (steeper learning curve), Squarespace (too generic), and WordPress (too heavy). You can go from idea to live landing page in an afternoon.\n\nIt also has a CMS for content and publishes to a fast CDN. When you need a custom app, you migrate off Framer,but that's a good problem to have.`,
+  'github': `GitHub is where code lives. Not because it's the best Git host (Gitlab is arguably better for self-hosted CI), but because of the network.\n\nEvery developer you'll ever hire has a GitHub profile. Every open source tool you'll use is on GitHub. Every CI/CD system integrates with GitHub first. The ecosystem lock-in is a feature, not a bug.\n\nFor a technical startup, GitHub is infrastructure,not a decision to agonize over.`,
+  'brevo': `Brevo (formerly Sendinblue) has the best free tier for transactional and marketing email: 300 emails/day, unlimited contacts, no credit card required.\n\nMailchimp charges by contact count,which gets expensive fast. Brevo charges by sends. For an early startup with a small list sending occasional campaigns, Brevo is significantly cheaper.\n\nDeliverability is solid. The automation builder is good enough. And the API for transactional emails is clean.`,
+  'plausible': `Plausible is privacy-first analytics: no cookies, no GDPR banner needed, lightweight script (< 1KB). You get the data you need,pageviews, sources, top pages, conversions,without building surveillance infrastructure.\n\nGoogle Analytics 4 is free but requires a cookie banner, processes data in the US, and has a terrible UX. Plausible's dashboard takes 30 seconds to understand.\n\nAt €9/month, it's the right tradeoff for a startup that takes user privacy seriously.`,
+  'stripe': `Stripe is the global standard for developer-friendly payments. The documentation is the best in the industry. The API handles one-time payments, subscriptions, invoicing, and payouts. It works in 40+ countries.\n\nThe 2.9% + 30¢ fee is slightly higher than alternatives, but the time saved on integration and the reliability of the infrastructure make it worth it for almost every startup.\n\nDon't agonize over payment providers. Use Stripe and move on.`,
+  'lexoffice': `For a German GmbH, accounting compliance is non-negotiable. Lexoffice integrates with DATEV (the standard used by German accountants), handles ELSTER submissions for VAT, and exports in formats your Steuerberater expects.\n\nThe UX is modern (unlike most German accounting software). It connects to your bank account for automatic transaction matching. And it handles the EU reverse-charge logic that trips up most international tools.\n\nIf you're operating a German GmbH, Lexoffice saves you hours every month and keeps your accountant happy.`,
+  'vercel': `Vercel is the best deployment platform for frontend applications. Git push, automatic deploy, preview URLs for every PR, edge CDN, serverless functions,all configured automatically.\n\nThe free tier is genuinely generous for early projects. The DX is the best in the industry. The performance (Edge Network) is exceptional.\n\nNetlify is a close second, but Vercel's Next.js integration and overall polish make it the default choice for any startup building on React.`,
+}
+
+function getWhyText(toolName: string, whyFromDb: string | null): string {
+  if (whyFromDb) return whyFromDb
+  const key = toolName.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+  return WHY_TEXTS[key] ?? `${toolName} is our pick for this category. It does the job reliably, integrates with the rest of your stack, and doesn't get in your way.`
+}
 
 export function ToolDetail() {
   const { slug } = useParams<{ slug: string }>()
-  const tool = slug ? getToolBySlug(slug) : undefined
+  const [tool, setTool] = useState<ToolWithCategory | null>(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+    async function fetchTool() {
+      const { data } = await supabase
+        .from('tools')
+        .select('*, categories(*)')
+        .eq('is_active', true)
+
+      // Match by slug derived from name
+      const match = (data as ToolWithCategory[] ?? []).find(
+        t => t.name.toLowerCase().replace(/[^a-z0-9]+/g, '-') === slug
+      )
+      setTool(match ?? null)
+      setLoading(false)
+    }
+    fetchTool()
+  }, [slug])
+
+  if (loading) {
+    return (
+      <main className="flex-1">
+        <div className="mx-auto max-w-2xl px-4 py-24">
+          <div className="h-8 w-48 animate-pulse rounded bg-gray-100 mb-4" />
+          <div className="h-12 w-80 animate-pulse rounded bg-gray-100" />
+        </div>
+      </main>
+    )
+  }
 
   if (!tool) {
     return (
@@ -21,33 +243,37 @@ export function ToolDetail() {
     )
   }
 
+  const whyText = getWhyText(tool.name, tool.why)
+  const toolSlug = tool.name.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+
   const toolJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
     name: tool.name,
-    description: tool.why.split('\n\n')[0],
+    description: whyText.split('\n\n')[0],
     applicationCategory: 'BusinessApplication',
-    url: tool.websiteUrl,
+    url: tool.website_url ?? undefined,
     offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD', description: 'Free tier available' },
     review: {
       '@type': 'Review',
-      reviewBody: tool.why,
+      reviewBody: whyText,
       author: { '@type': 'Person', name: 'Nicolas Meibohm', url: 'https://lmno.de' },
       reviewRating: { '@type': 'Rating', ratingValue: '5', bestRating: '5' },
       publisher: { '@type': 'Organization', name: 'Day One', url: 'https://dayone.tools' },
     },
   }
 
-  function handleCTA() {
-    window.open(tool!.affiliateUrl ?? tool!.websiteUrl, '_blank', 'noopener,noreferrer')
+  async function handleCTA() {
+    try { await trackClick(tool!.id) } catch { /* ignore */ }
+    window.open(tool!.affiliate_url ?? tool!.website_url ?? '#', '_blank', 'noopener,noreferrer')
   }
 
   return (
     <>
     <SEO
-      title={`${tool.name}: Best ${tool.category} for startups`}
-      description={`Why ${tool.name} is the best ${tool.category.toLowerCase()} for early-stage startups. ${tool.tagline}`}
-      canonical={`/tools/${tool.slug}`}
+      title={`${tool.name}: Best ${tool.categories?.name ?? 'tool'} for startups`}
+      description={`Why ${tool.name} is the best ${tool.categories?.name?.toLowerCase() ?? 'tool'} for early-stage startups. ${tool.tagline}`}
+      canonical={`/tools/${toolSlug}`}
       jsonLd={toolJsonLd}
     />
     <main className="flex-1">
@@ -65,12 +291,12 @@ export function ToolDetail() {
         <div className="mb-10 flex items-start gap-6">
           <BrandLogo
             toolName={tool.name}
-            categoryIcon={tool.categoryIcon}
+            categoryIcon={tool.categories?.icon}
             size={80}
           />
           <div>
             <span className="text-xs font-medium uppercase tracking-widest text-gray-400">
-              {tool.category}
+              {tool.categories?.name}
             </span>
             <h1 className="mt-1 text-4xl font-bold text-gray-900">{tool.name}</h1>
             <p className="mt-2 text-lg text-gray-500">{tool.tagline}</p>
@@ -83,7 +309,7 @@ export function ToolDetail() {
             Why this is the one
           </h2>
           <div className="mt-4 space-y-4">
-            {tool.why.split('\n\n').map((para, i) => (
+            {whyText.split('\n\n').map((para, i) => (
               <p key={i} className="leading-relaxed text-gray-700">{para}</p>
             ))}
           </div>
@@ -97,11 +323,14 @@ export function ToolDetail() {
           Get {tool.name} <ExternalLink size={16} />
         </button>
 
-        {tool.affiliateUrl && (
-          <p className="mt-3 text-center text-xs text-gray-400">
-            * This is an affiliate link. We only recommend tools we'd actually use.
-          </p>
+        {tool.is_sponsored && (
+          <p className="mt-3 text-center text-xs text-gray-400">Sponsored placement</p>
         )}
+        <p className="mt-3 text-center text-xs text-gray-400">
+          * This may be an affiliate link. We only recommend tools we'd actually use.
+        </p>
+
+        <CommentsSection toolId={tool.id} />
       </div>
     </main>
     </>
