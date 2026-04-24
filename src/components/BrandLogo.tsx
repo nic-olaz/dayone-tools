@@ -34,7 +34,7 @@ const ICONS: Record<string, { path: string; hex: string; title: string }> = {
 
 // Brand colors for tools not in simple-icons
 const BRAND_AVATARS: Record<string, { bg: string; color: string; letter: string }> = {
-  qonto:     { bg: '#FF4500', color: '#ffffff', letter: 'Q' },
+  qonto:     { bg: '#000000', color: '#ffffff', letter: 'Q' },
   slack:     { bg: '#4A154B', color: '#ffffff', letter: 'S' },
   lexoffice: { bg: '#0087FF', color: '#ffffff', letter: 'L' },
 }
