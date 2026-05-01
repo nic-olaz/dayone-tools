@@ -7,6 +7,24 @@ import { SEO } from '@/components/SEO'
 const homeJsonLd = [
   {
     '@context': 'https://schema.org',
+    '@type': 'Organization',
+    name: 'Day One',
+    url: 'https://dayone.tools',
+    logo: 'https://dayone.tools/og-image.png',
+    description: 'The opinionated startup tool directory. One pick per category. No comparisons. No noise.',
+    founder: {
+      '@type': 'Person',
+      name: 'Nicolas Meibohm',
+      url: 'https://lmno.de',
+      jobTitle: 'Startup Coach & Founder Advisor',
+    },
+    sameAs: [
+      'https://lmno.de',
+      'https://linkedin.com/in/nicolasmeibohm'
+    ],
+  },
+  {
+    '@context': 'https://schema.org',
     '@type': 'WebSite',
     name: 'Day One',
     url: 'https://dayone.tools',

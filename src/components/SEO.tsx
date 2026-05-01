@@ -10,9 +10,11 @@ interface SEOProps {
   canonical?: string
   ogImage?: string
   jsonLd?: object | object[]
+  lang?: string
+  alternateLanguages?: Array<{ lang: string; url: string }>
 }
 
-export function SEO({ title, description, canonical, ogImage, jsonLd }: SEOProps) {
+export function SEO({ title, description, canonical, ogImage, jsonLd, lang = 'de', alternateLanguages }: SEOProps) {
   const fullTitle = title ? `${title} | ${SITE_NAME}` : `${SITE_NAME}: The startup toolkit. One pick per category.`
   const metaDesc = description ?? 'The opinionated startup tool directory. One pick per category. No comparisons. No noise. Built by startup coach Nicolas Meibohm.'
   const canonicalUrl = canonical ? `${SITE_URL}${canonical}` : SITE_URL
@@ -22,9 +24,16 @@ export function SEO({ title, description, canonical, ogImage, jsonLd }: SEOProps
 
   return (
     <Helmet>
+      <html lang={lang} />
       <title>{fullTitle}</title>
       <meta name="description" content={metaDesc} />
       <link rel="canonical" href={canonicalUrl} />
+
+      {/* Hreflang for international SEO */}
+      {alternateLanguages?.map(({ lang: altLang, url }) => (
+        <link key={altLang} rel="alternate" hrefLang={altLang} href={`${SITE_URL}${url}`} />
+      ))}
+      <link rel="alternate" hrefLang="x-default" href={canonicalUrl} />
 
       {/* Open Graph */}
       <meta property="og:title" content={fullTitle} />

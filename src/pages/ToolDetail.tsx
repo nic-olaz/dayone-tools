@@ -47,6 +47,31 @@ export function ToolDetail() {
 
   const whyText = getWhyText(tool.name)
 
+  const breadcrumbJsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'BreadcrumbList',
+    itemListElement: [
+      {
+        '@type': 'ListItem',
+        position: 1,
+        name: 'Home',
+        item: 'https://dayone.tools'
+      },
+      {
+        '@type': 'ListItem',
+        position: 2,
+        name: tool.categories?.name ?? 'Tools',
+        item: `https://dayone.tools/#${tool.categories?.slug ?? 'tools'}`
+      },
+      {
+        '@type': 'ListItem',
+        position: 3,
+        name: tool.name,
+        item: `https://dayone.tools/tools/${tool.slug}`
+      }
+    ]
+  }
+
   const toolJsonLd = {
     '@context': 'https://schema.org',
     '@type': 'SoftwareApplication',
@@ -74,7 +99,7 @@ export function ToolDetail() {
       title={`${tool.name}: Best ${tool.categories?.name ?? 'tool'} for startups`}
       description={`Why ${tool.name} is the best ${tool.categories?.name?.toLowerCase() ?? 'tool'} for early-stage startups. ${tool.tagline}`}
       canonical={`/tools/${tool.slug}`}
-      jsonLd={toolJsonLd}
+      jsonLd={[breadcrumbJsonLd, toolJsonLd]}
     />
     <main className="flex-1">
       <div className="mx-auto max-w-2xl px-4 py-16 sm:px-6 lg:px-8">
