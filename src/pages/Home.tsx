@@ -1,10 +1,8 @@
-import { useEffect, useRef, useState } from 'react'
+import { useRef } from 'react'
 import { ChevronDown } from 'lucide-react'
-import { supabase, type Tool, type Category } from '@/lib/supabase'
+import { tools } from '@/lib/tools-data'
 import { ToolCard } from '@/components/ToolCard'
 import { SEO } from '@/components/SEO'
-
-type ToolWithCategory = Tool & { categories: Category }
 
 const homeJsonLd = [
   {
@@ -47,30 +45,7 @@ const homeJsonLd = [
 ]
 
 export function Home() {
-  const [tools, setTools] = useState<ToolWithCategory[]>([])
-  const [loading, setLoading] = useState(true)
-  const [error, setError] = useState<string | null>(null)
   const gridRef = useRef<HTMLDivElement>(null)
-
-  useEffect(() => {
-    async function fetchTools() {
-      const { data, error } = await supabase
-        .from('tools')
-        .select('*, categories(*)')
-        .eq('is_active', true)
-        .order('order_index', { referencedTable: 'categories', ascending: true })
-
-      if (error) {
-        setError('Could not load tools. Please try again.')
-        console.error(error)
-      } else {
-        setTools((data as ToolWithCategory[]) ?? [])
-      }
-      setLoading(false)
-    }
-
-    fetchTools()
-  }, [])
 
   function scrollToGrid() {
     gridRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
@@ -123,30 +98,11 @@ export function Home() {
           </p>
         </div>
 
-        {loading && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {Array.from({ length: 15 }).map((_, i) => (
-              <div
-                key={i}
-                className="h-52 animate-pulse rounded-xl border border-gray-200 bg-gray-100"
-              />
-            ))}
-          </div>
-        )}
-
-        {error && (
-          <div className="rounded-xl border border-red-200 bg-red-50 p-8 text-center text-red-600">
-            {error}
-          </div>
-        )}
-
-        {!loading && !error && (
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
-            {tools.map((tool, i) => (
-              <ToolCard key={tool.id} tool={tool} stepNumber={i + 1} />
-            ))}
-          </div>
-        )}
+        <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+          {tools.map((tool, i) => (
+            <ToolCard key={tool.id} tool={tool} stepNumber={i + 1} />
+          ))}
+        </div>
       </section>
 
       {/* About section */}
