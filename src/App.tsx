@@ -4,6 +4,8 @@ import { Footer } from '@/components/Footer'
 import { Home } from '@/pages/Home'
 import { Why } from '@/pages/Why'
 import { ToolDetail } from '@/pages/ToolDetail'
+import { Impressum } from '@/pages/Impressum'
+import { Datenschutz } from '@/pages/Datenschutz'
 
 function App() {
   return (
@@ -14,6 +16,8 @@ function App() {
           <Route path="/" element={<Home />} />
           <Route path="/why" element={<Why />} />
           <Route path="/tools/:slug" element={<ToolDetail />} />
+          <Route path="/impressum" element={<Impressum />} />
+          <Route path="/datenschutz" element={<Datenschutz />} />
         </Routes>
         <Footer />
       </div>

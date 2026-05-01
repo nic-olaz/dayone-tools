@@ -148,7 +148,7 @@ export function ToolDetail() {
         </button>
 
         <p className="mt-3 text-center text-xs text-gray-400">
-          * This may be an affiliate link. We only recommend tools we'd actually use.
+          * Affiliate-Link: Wir erhalten eine Provision, wenn du über diesen Link kaufst. Für dich entstehen keine Zusatzkosten.
         </p>
       </div>
     </main>
